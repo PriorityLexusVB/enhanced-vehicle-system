@@ -52,7 +52,10 @@ export default function HomePage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Trade-In Form</h2>
               <p className="text-gray-600 mb-4">Submit vehicle information for appraisal</p>
-              <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+              <button 
+                onClick={() => router.push('/submit')}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+              >
                 Start Submission
               </button>
             </div>
@@ -60,7 +63,10 @@ export default function HomePage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Manager Dashboard</h2>
               <p className="text-gray-600 mb-4">View and manage submissions</p>
-              <button className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+              <button 
+                onClick={() => router.push('/manager-dashboard')}
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+              >
                 View Dashboard
               </button>
             </div>
@@ -68,7 +74,10 @@ export default function HomePage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Admin Panel</h2>
               <p className="text-gray-600 mb-4">System administration</p>
-              <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+              <button 
+                onClick={() => router.push('/admin')}
+                className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
+              >
                 Admin Access
               </button>
             </div>

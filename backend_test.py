@@ -96,7 +96,89 @@ class OCRAPITester:
             self.test_results.append(result)
             return False, {}
 
-    def test_ocr_with_clear_image(self):
+    def test_vin_ocr_with_clear_image(self):
+        """Test VIN OCR with a clear image containing a valid VIN"""
+        print("\n📸 Creating test image with clear VIN...")
+        test_image = self.create_test_image_with_text("1HGBH41JXMN109186", "/tmp/clear_vin.png")
+        
+        with open(test_image, 'rb') as f:
+            files = {'image': ('clear_vin.png', f, 'image/png')}
+            success, response = self.run_test(
+                "VIN OCR with Clear VIN Image",
+                "POST",
+                "api/ocr-vin",
+                200,
+                files=files
+            )
+        
+        # Clean up
+        os.remove(test_image)
+        
+        if success and 'vin' in response:
+            vin = response['vin']
+            if vin != "UNREADABLE" and len(vin) == 17:
+                print(f"   ✅ Successfully extracted VIN: {vin}")
+                return True
+            else:
+                print(f"   ⚠️  Unexpected VIN result: {vin}")
+                return False
+        return False
+
+    def test_vin_ocr_no_image(self):
+        """Test VIN OCR endpoint without providing an image"""
+        success, response = self.run_test(
+            "VIN OCR without Image",
+            "POST",
+            "api/ocr-vin",
+            400
+        )
+        
+        if success and 'error' in response:
+            print(f"   ✅ Correctly returned error: {response['error']}")
+            return True
+        return False
+
+    def test_license_plate_ocr_with_clear_image(self):
+        """Test License Plate OCR with a clear image containing a license plate"""
+        print("\n📸 Creating test image with clear license plate...")
+        test_image = self.create_test_image_with_text("ABC1234", "/tmp/clear_plate.png")
+        
+        with open(test_image, 'rb') as f:
+            files = {'image': ('clear_plate.png', f, 'image/png')}
+            success, response = self.run_test(
+                "License Plate OCR with Clear Plate Image",
+                "POST",
+                "api/ocr-license-plate",
+                200,
+                files=files
+            )
+        
+        # Clean up
+        os.remove(test_image)
+        
+        if success and 'licensePlate' in response:
+            plate = response['licensePlate']
+            if plate != "UNREADABLE" and len(plate) >= 4:
+                print(f"   ✅ Successfully extracted license plate: {plate}")
+                return True
+            else:
+                print(f"   ⚠️  Unexpected license plate result: {plate}")
+                return False
+        return False
+
+    def test_license_plate_ocr_no_image(self):
+        """Test License Plate OCR endpoint without providing an image"""
+        success, response = self.run_test(
+            "License Plate OCR without Image",
+            "POST",
+            "api/ocr-license-plate",
+            400
+        )
+        
+        if success and 'error' in response:
+            print(f"   ✅ Correctly returned error: {response['error']}")
+            return True
+        return False
         """Test OCR with a clear image containing readable numbers"""
         print("\n📸 Creating test image with clear mileage...")
         test_image = self.create_test_image_with_text("87325", "/tmp/clear_mileage.png")

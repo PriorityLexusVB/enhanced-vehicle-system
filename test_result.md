@@ -217,4 +217,6 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Backend API testing completed. Core VIN decode functionality is working perfectly. OCR endpoints and admin user management have configuration issues that need to be resolved by main agent. All endpoints are implemented correctly but need proper Google Vision API and Firebase admin credentials."
+  - agent: "testing"
+    message: "OCR API testing completed after credentials update. CRITICAL FINDING: Google Vision API credentials are working correctly, but Google Cloud project #155312316711 requires billing to be enabled. All OCR endpoints fail with billing error: 'This API method requires billing to be enabled'. VIN decode API works perfectly. Code implementation is correct - this is a Google Cloud billing configuration issue, not a code issue."
 ```

@@ -283,6 +283,41 @@ class OCRAPITester:
                 return False
         return False
 
+    def test_vin_decode_api(self):
+        """Test VIN decode API with valid VIN"""
+        success, response = self.run_test(
+            "VIN Decode API",
+            "POST",
+            "api/vin-decode",
+            200,
+            data={"vin": "1HGBH41JXMN109186"}
+        )
+        
+        if success and 'success' in response and response['success']:
+            vehicle = response.get('vehicle', {})
+            if vehicle.get('make') and vehicle.get('year'):
+                print(f"   ✅ Successfully decoded VIN: {vehicle.get('make')} {vehicle.get('year')}")
+                return True
+            else:
+                print(f"   ⚠️  VIN decoded but missing vehicle info")
+                return False
+        return False
+
+    def test_vin_decode_invalid(self):
+        """Test VIN decode API with invalid VIN"""
+        success, response = self.run_test(
+            "VIN Decode API - Invalid VIN",
+            "POST",
+            "api/vin-decode",
+            400,
+            data={"vin": "INVALID"}
+        )
+        
+        if success and 'error' in response:
+            print(f"   ✅ Correctly returned error for invalid VIN: {response['error']}")
+            return True
+        return False
+
     def test_response_time(self):
         """Test OCR API response time"""
         print("\n⏱️  Testing OCR response time...")
@@ -314,6 +349,55 @@ class OCRAPITester:
         else:
             print(f"   ⚠️  Response time is too slow (> 5 seconds)")
             return False
+
+    def print_summary(self):
+        """Print detailed test summary"""
+        print("\n" + "=" * 60)
+        print("📊 DETAILED TEST RESULTS")
+        print("=" * 60)
+        
+        ocr_tests = [r for r in self.test_results if 'ocr' in r['endpoint']]
+        vin_tests = [r for r in self.test_results if 'vin-decode' in r['endpoint']]
+        
+        print(f"\n🔍 OCR ENDPOINTS TESTING:")
+        for test in ocr_tests:
+            status = "✅ PASS" if test['success'] else "❌ FAIL"
+            print(f"   {status} - {test['name']}")
+            if not test['success']:
+                print(f"      Expected: {test['expected_status']}, Got: {test['actual_status']}")
+                if 'error' in test:
+                    print(f"      Error: {test['error']}")
+        
+        print(f"\n🚗 VIN DECODE ENDPOINTS TESTING:")
+        for test in vin_tests:
+            status = "✅ PASS" if test['success'] else "❌ FAIL"
+            print(f"   {status} - {test['name']}")
+            if not test['success']:
+                print(f"      Expected: {test['expected_status']}, Got: {test['actual_status']}")
+                if 'error' in test:
+                    print(f"      Error: {test['error']}")
+        
+        print(f"\n📈 OVERALL RESULTS:")
+        print(f"   Total Tests: {self.tests_run}")
+        print(f"   Passed: {self.tests_passed}")
+        print(f"   Failed: {self.tests_run - self.tests_passed}")
+        print(f"   Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        # Check critical functionality
+        critical_ocr_working = any(
+            test['success'] and 'Clear' in test['name'] and 'ocr' in test['endpoint'] 
+            for test in self.test_results
+        )
+        vin_decode_working = any(
+            test['success'] and 'VIN Decode API' == test['name'] 
+            for test in self.test_results
+        )
+        
+        print(f"\n🎯 CRITICAL FUNCTIONALITY STATUS:")
+        print(f"   OCR Processing: {'✅ WORKING' if critical_ocr_working else '❌ FAILING'}")
+        print(f"   VIN Decode: {'✅ WORKING' if vin_decode_working else '❌ FAILING'}")
+        
+        return critical_ocr_working, vin_decode_working
 
 def main():
     print("🚀 Starting OCR API Tests...")

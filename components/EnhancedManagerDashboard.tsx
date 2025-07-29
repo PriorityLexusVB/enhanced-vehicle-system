@@ -44,6 +44,19 @@ interface Submission {
     userAgent: string
     timestamp: string
   }
+  ocrResults?: {
+    mileage?: string
+    vin?: string
+    licensePlate?: string
+  }
+  photoAnalysis?: {
+    exteriorCondition?: string
+    interiorCondition?: string
+    damageAssessment?: string[]
+    overallGrade?: string
+    estimatedRepairCost?: number
+    confidenceScore?: number
+  }
 }
 
 interface EnhancedManagerDashboardProps {

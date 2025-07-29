@@ -255,15 +255,15 @@ class OCRAPITester:
             return True
         return False
 
-    def test_ocr_with_multiple_numbers(self):
-        """Test OCR with image containing multiple numbers"""
+    def test_mileage_ocr_with_multiple_numbers(self):
+        """Test Mileage OCR with image containing multiple numbers"""
         print("\n📸 Creating test image with multiple numbers...")
         test_image = self.create_test_image_with_text("2023 87325 MILES", "/tmp/multiple_numbers.png")
         
         with open(test_image, 'rb') as f:
             files = {'image': ('multiple_numbers.png', f, 'image/png')}
             success, response = self.run_test(
-                "OCR with Multiple Numbers",
+                "Mileage OCR with Multiple Numbers",
                 "POST",
                 "api/ocr-mileage",
                 200,

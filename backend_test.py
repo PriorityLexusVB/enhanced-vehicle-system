@@ -207,8 +207,8 @@ class OCRAPITester:
                 return False
         return False
 
-    def test_ocr_with_unclear_image(self):
-        """Test OCR with an unclear/empty image"""
+    def test_mileage_ocr_with_unclear_image(self):
+        """Test Mileage OCR with an unclear/empty image"""
         print("\n📸 Creating test image with unclear content...")
         # Create a mostly black image (unclear)
         img = Image.new('RGB', (400, 200), color='black')
@@ -221,7 +221,7 @@ class OCRAPITester:
         with open(test_image, 'rb') as f:
             files = {'image': ('unclear_image.png', f, 'image/png')}
             success, response = self.run_test(
-                "OCR with Unclear Image",
+                "Mileage OCR with Unclear Image",
                 "POST",
                 "api/ocr-mileage",
                 200,

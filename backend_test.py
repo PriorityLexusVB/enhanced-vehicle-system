@@ -50,26 +50,50 @@ class OCRAPITester:
                 response = requests.get(url)
 
             success = response.status_code == expected_status
+            result = {
+                'name': name,
+                'endpoint': endpoint,
+                'expected_status': expected_status,
+                'actual_status': response.status_code,
+                'success': success
+            }
+            
             if success:
                 self.tests_passed += 1
                 print(f"✅ Passed - Status: {response.status_code}")
                 try:
                     response_data = response.json()
                     print(f"   Response: {response_data}")
+                    result['response'] = response_data
+                    self.test_results.append(result)
                     return True, response_data
                 except:
+                    result['response'] = {}
+                    self.test_results.append(result)
                     return True, {}
             else:
                 print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
                 try:
                     error_data = response.json()
                     print(f"   Error Response: {error_data}")
+                    result['error'] = error_data
                 except:
                     print(f"   Error Text: {response.text}")
+                    result['error'] = response.text
+                self.test_results.append(result)
                 return False, {}
 
         except Exception as e:
             print(f"❌ Failed - Error: {str(e)}")
+            result = {
+                'name': name,
+                'endpoint': endpoint,
+                'expected_status': expected_status,
+                'actual_status': 'ERROR',
+                'success': False,
+                'error': str(e)
+            }
+            self.test_results.append(result)
             return False, {}
 
     def test_ocr_with_clear_image(self):

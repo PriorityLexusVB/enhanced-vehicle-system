@@ -119,13 +119,16 @@ backend:
     implemented: true
     working: false
     file: "app/api/ocr-vin/route.ts"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ Google Vision API authentication issues. Returns 500 errors due to missing/invalid environment variables. Code structure is correct but needs Google Vision API credentials configuration."
+      - working: false
+        agent: "testing"
+        comment: "❌ Google Vision API billing issue. Credentials are correct but Google Cloud project #155312316711 requires billing to be enabled. Error: 'This API method requires billing to be enabled. Please enable billing on project #155312316711'. Code structure and credentials are working properly."
 
   - task: "OCR License Plate Endpoint"
     implemented: true

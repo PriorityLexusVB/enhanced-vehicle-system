@@ -325,21 +325,21 @@ backend:
 
 metadata:
   created_by: "main_agent"
-  version: "1.1"
-  test_sequence: 1
-  run_ui: false
+  version: "1.2"
+  test_sequence: 2
+  run_ui: true
+  frontend_testing_completed: true
 
 test_plan:
   current_focus:
     - "Enable Google Cloud billing for Vision API"
     - "Fix Firebase admin SDK configuration"
   stuck_tasks:
-    - "OCR VIN Endpoint"
-    - "OCR License Plate Endpoint" 
     - "OCR Mileage Endpoint"
     - "Admin Users Management API"
   test_all: false
   test_priority: "high_first"
+  frontend_status: "COMPLETED_SUCCESSFULLY"
 
 agent_communication:
   - agent: "testing"

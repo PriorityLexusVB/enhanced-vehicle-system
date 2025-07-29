@@ -12,6 +12,7 @@ class OCRAPITester:
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
+        self.test_results = []
 
     def create_test_image_with_text(self, text, filename):
         """Create a simple test image with text for OCR testing"""

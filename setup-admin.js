@@ -1,0 +1,26 @@
+// Simple setup script for first admin user
+console.log('🔧 Admin User Setup Instructions');
+console.log('================================');
+console.log('');
+console.log('Since the dependencies are having issues, please create the first admin user manually:');
+console.log('');
+console.log('1. Go to Firebase Console: https://console.firebase.google.com/');
+console.log('2. Select project: priority-appraisal-ai-tool');
+console.log('3. Go to Authentication > Users');
+console.log('4. Click "Add user" and create:');
+console.log('   📧 Email: admin@priority-appraisal.com');
+console.log('   🔐 Password: admin123456');
+console.log('');
+console.log('5. Go to Firestore Database');
+console.log('6. Create collection: "users"');
+console.log('7. Add document with the user UID as document ID:');
+console.log('   {');
+console.log('     "email": "admin@priority-appraisal.com",');
+console.log('     "role": "admin",');
+console.log('     "createdAt": [Current timestamp]');
+console.log('   }');
+console.log('');
+console.log('Then you can login with these credentials:');
+console.log('📧 Email: admin@priority-appraisal.com');
+console.log('🔐 Password: admin123456');
+console.log('👤 Role: admin');

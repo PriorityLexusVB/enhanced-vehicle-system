@@ -1,0 +1,86 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { onAuthStateChanged, signOut } from "firebase/auth"
+import { auth } from "@/lib/firebaseconfig" // ✅ update if not using path aliases
+import LoginForm from "@/components/login-form"
+import ManagerDashboard from "@/components/manager-dashboard"
+import VehicleTradeInForm from "@/components/TradeInForm"
+
+export default function Page() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [view, setView] = useState<"form" | "dashboard">("form")
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user)
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      setUser(null)
+      setView("form")
+    } catch (error) {
+      console.error("Logout error:", error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <LoginForm onLoginSuccess={(email) => setUser({ email })} />
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900">
+      {/* Navigation */}
+      <div className="bg-gray-800 border-b border-gray-700 p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex space-x-4">
+            <button
+              onClick={() => setView("form")}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                view === "form" ? "bg-blue-600 text-white" : "text-gray-300 hover:text-white hover:bg-gray-700"
+              }`}
+            >
+              Trade-In Form
+            </button>
+            <button
+              onClick={() => setView("dashboard")}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                view === "dashboard" ? "bg-blue-600 text-white" : "text-gray-300 hover:text-white hover:bg-gray-700"
+              }`}
+            >
+              Manager Dashboard
+            </button>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      {view === "form" ? (
+        <VehicleTradeInForm />
+      ) : (
+        <ManagerDashboard userEmail={user.email} onLogout={handleLogout} />
+      )}
+    </div>
+  )
+}

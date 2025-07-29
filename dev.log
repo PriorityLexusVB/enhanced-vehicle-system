@@ -1,0 +1,9 @@
+yarn run v1.22.22
+$ next dev --port 3000 --hostname 0.0.0.0
+   ▲ Next.js 15.2.4
+   - Local:        http://localhost:3000
+   - Network:      http://0.0.0.0:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+Done in 3.72s.

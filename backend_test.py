@@ -400,7 +400,7 @@ class OCRAPITester:
         return critical_ocr_working, vin_decode_working
 
 def main():
-    print("🚀 Starting OCR API Tests...")
+    print("🚀 Starting Comprehensive OCR API Tests...")
     print("=" * 50)
     
     # Setup
@@ -408,10 +408,25 @@ def main():
     
     # Run all tests
     tests = [
-        tester.test_ocr_no_image,
-        tester.test_ocr_with_clear_image,
-        tester.test_ocr_with_unclear_image,
-        tester.test_ocr_with_multiple_numbers,
+        # VIN OCR Tests
+        tester.test_vin_ocr_no_image,
+        tester.test_vin_ocr_with_clear_image,
+        
+        # License Plate OCR Tests
+        tester.test_license_plate_ocr_no_image,
+        tester.test_license_plate_ocr_with_clear_image,
+        
+        # Mileage OCR Tests
+        tester.test_mileage_ocr_no_image,
+        tester.test_mileage_ocr_with_clear_image,
+        tester.test_mileage_ocr_with_unclear_image,
+        tester.test_mileage_ocr_with_multiple_numbers,
+        
+        # VIN Decode Tests
+        tester.test_vin_decode_api,
+        tester.test_vin_decode_invalid,
+        
+        # Performance Tests
         tester.test_response_time,
     ]
     
@@ -421,16 +436,19 @@ def main():
         except Exception as e:
             print(f"❌ Test failed with exception: {str(e)}")
     
-    # Print results
-    print("\n" + "=" * 50)
-    print(f"📊 Test Results: {tester.tests_passed}/{tester.tests_run} tests passed")
+    # Print detailed results
+    ocr_working, vin_working = tester.print_summary()
     
-    if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed!")
+    # Determine overall success
+    if ocr_working and vin_working:
+        print("\n🎉 CRITICAL FUNCTIONALITY: ALL WORKING!")
         return 0
-    else:
-        print("⚠️  Some tests failed")
+    elif vin_working:
+        print("\n⚠️  PARTIAL SUCCESS: VIN Decode working, OCR needs attention")
         return 1
+    else:
+        print("\n❌ CRITICAL FAILURE: Core functionality not working")
+        return 2
 
 if __name__ == "__main__":
     sys.exit(main())

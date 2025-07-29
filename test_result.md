@@ -134,13 +134,16 @@ backend:
     implemented: true
     working: false
     file: "app/api/ocr-license-plate/route.ts"
-    stuck_count: 1
+    stuck_count: 2
     priority: "medium"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ Google Vision API authentication issues. Same root cause as VIN OCR - needs proper Google Vision API credentials setup."
+      - working: false
+        agent: "testing"
+        comment: "❌ Google Vision API billing issue. Same root cause as VIN OCR - Google Cloud project requires billing to be enabled. Credentials are working but billing is not enabled on project #155312316711."
 
   - task: "OCR Mileage Endpoint"
     implemented: true

@@ -523,16 +523,138 @@ export default function EnhancedManagerDashboard({ userEmail, onLogout }: Enhanc
           </TabsContent>
 
           <TabsContent value="submissions">
-            <Card className="shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-xl">📋 All Vehicle Submissions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center text-gray-600 py-8">
-                  Detailed submissions management interface
-                </p>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {loading ? (
+                <div className="flex justify-center items-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <span className="ml-2">Loading submissions...</span>
+                </div>
+              ) : submissions.length === 0 ? (
+                <Card className="shadow-xl">
+                  <CardContent className="py-12 text-center">
+                    <Car className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-600 mb-2">No Submissions Yet</h3>
+                    <p className="text-gray-500">Vehicle submissions will appear here for photo analysis and reporting.</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-6">
+                  {submissions.map((submission) => (
+                    <Card key={submission.id} className="shadow-xl">
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-xl flex items-center gap-2">
+                              <Car className="w-6 h-6 text-blue-600" />
+                              {submission.year} {submission.make} {submission.model}
+                            </CardTitle>
+                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                              <span>VIN: {submission.vin}</span>
+                              <span>Mileage: {submission.mileage.toLocaleString()}</span>
+                              <span>Submitted by: {submission.submittedBy}</span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {submission.photoUrls?.length || 0} Photos
+                            </Badge>
+                            {submission.createdAt && (
+                              <span className="text-xs text-gray-500">
+                                {new Date(submission.createdAt.seconds * 1000).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {/* OCR Results Summary */}
+                        {submission.ocrResults && (
+                          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                            <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                              <Eye className="w-4 h-4" />
+                              OCR Analysis Results
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                              {submission.ocrResults.vin && (
+                                <div>
+                                  <span className="font-medium">VIN Extracted:</span>
+                                  <Badge className="ml-2 text-xs bg-blue-100 text-blue-800">
+                                    {submission.ocrResults.vin}
+                                  </Badge>
+                                </div>
+                              )}
+                              {submission.ocrResults.mileage && (
+                                <div>
+                                  <span className="font-medium">Mileage Read:</span>
+                                  <Badge className="ml-2 text-xs bg-green-100 text-green-800">
+                                    {submission.ocrResults.mileage}
+                                  </Badge>
+                                </div>
+                              )}
+                              {submission.ocrResults.licensePlate && (
+                                <div>
+                                  <span className="font-medium">License Plate:</span>
+                                  <Badge className="ml-2 text-xs bg-purple-100 text-purple-800">
+                                    {submission.ocrResults.licensePlate}
+                                  </Badge>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Photo Analysis Report */}
+                        {submission.photoUrls && submission.photoUrls.length > 0 ? (
+                          <div className="space-y-4">
+                            <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                              <Camera className="w-4 h-4" />
+                              Photo Analysis Report
+                            </h4>
+                            {generatePhotoAnalysisReport(submission)}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 text-gray-500">
+                            <Camera className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                            <p>No photos available for analysis</p>
+                          </div>
+                        )}
+
+                        {/* Vehicle Information */}
+                        {submission.vehicleInfo && (
+                          <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                            <h4 className="font-semibold text-green-800 mb-3">Vehicle Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              {submission.vehicleInfo.tradeInValue && (
+                                <div>
+                                  <span className="font-medium">Trade-in Value:</span>
+                                  <span className="ml-2 text-green-700 font-bold">
+                                    {submission.vehicleInfo.tradeInValue}
+                                  </span>
+                                </div>
+                              )}
+                              {submission.vehicleInfo.marketTrend && (
+                                <div>
+                                  <span className="font-medium">Market Trend:</span>
+                                  <span className="ml-2">{submission.vehicleInfo.marketTrend}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Notes */}
+                        {submission.notes && (
+                          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                            <h4 className="font-semibold text-gray-800 mb-2">Submission Notes</h4>
+                            <p className="text-sm text-gray-600">{submission.notes}</p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics">

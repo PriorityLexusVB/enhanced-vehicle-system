@@ -241,10 +241,10 @@ class OCRAPITester:
                 return False
         return False
 
-    def test_ocr_no_image(self):
-        """Test OCR endpoint without providing an image"""
+    def test_mileage_ocr_no_image(self):
+        """Test Mileage OCR endpoint without providing an image"""
         success, response = self.run_test(
-            "OCR without Image",
+            "Mileage OCR without Image",
             "POST",
             "api/ocr-mileage",
             400

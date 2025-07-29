@@ -3,7 +3,7 @@ import { ImageAnnotatorClient } from '@google-cloud/vision'
 
 // Initialize Google Vision API client using environment variables
 const vision = new ImageAnnotatorClient({
-  projectId: 'trade-in-vision-api',
+  projectId: 'priority-appraisal-ai-tool',
   credentials: {
     client_email: process.env.FIREBASE_CLIENT_EMAIL,
     private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),

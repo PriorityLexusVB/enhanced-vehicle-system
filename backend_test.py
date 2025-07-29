@@ -179,14 +179,15 @@ class OCRAPITester:
             print(f"   ✅ Correctly returned error: {response['error']}")
             return True
         return False
-        """Test OCR with a clear image containing readable numbers"""
+    def test_mileage_ocr_with_clear_image(self):
+        """Test Mileage OCR with a clear image containing readable numbers"""
         print("\n📸 Creating test image with clear mileage...")
         test_image = self.create_test_image_with_text("87325", "/tmp/clear_mileage.png")
         
         with open(test_image, 'rb') as f:
             files = {'image': ('clear_mileage.png', f, 'image/png')}
             success, response = self.run_test(
-                "OCR with Clear Mileage Image",
+                "Mileage OCR with Clear Mileage Image",
                 "POST",
                 "api/ocr-mileage",
                 200,

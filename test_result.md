@@ -204,7 +204,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Fix Google Vision API credentials for OCR endpoints"
+    - "Enable Google Cloud billing for Vision API"
     - "Fix Firebase admin SDK configuration"
   stuck_tasks:
     - "OCR VIN Endpoint"

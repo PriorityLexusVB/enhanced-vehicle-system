@@ -4,21 +4,23 @@
 
 Set these in your Vercel dashboard under **Project Settings → Environment Variables**:
 
-### Firebase Configuration
-```
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyB0g7f_313m1pvVDA7hTQthldNTkjvrgF8
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=priority-appraisal-ai-tool.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=priority-appraisal-ai-tool
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=priority-appraisal-ai-tool.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=155312316711
-NEXT_PUBLIC_FIREBASE_APP_ID=1:155312316711:web:5728ed9367b192cc968902
+### Firebase Configuration (ADD THESE TO VERCEL)
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
-### Firebase Admin SDK
+### Firebase Admin SDK (ADD THESE TO VERCEL)  
+```bash
+FIREBASE_CLIENT_EMAIL=your_service_account_email
+FIREBASE_PRIVATE_KEY=your_private_key_here
 ```
-FIREBASE_CLIENT_EMAIL=vision-api-sa@trade-in-vision-api.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDMFjwO3N7MDorL\nbn44NBLOEOTy5wtF8sJm2lm3TCf7Wf7nO1w08SjPdbdc2F6JsYLOvshsXqVyf2W/\n89tc+H9bnNAGZfAwFpk2b4aU9jlvVaqoqOyNWjM181DHtJGVvFRBKFpNNtWjINCY\nI1eBrlLtik2aWbaqwC+XjwQZsg4fSqUTQHmgxjG1n2WjbQ42kMQu/9uaOv9GAQid\nfydAfzh+djtA5YJiLBSglm6dMb6VGregVwI/jvsnXoPQ+dnL6i4eDZ2LtAEZdknG\nwbBwuDWdY3CXQmNSKp8ZTIPA/ia1st33KpPimrrJVQm6wmq4w2At832lros2NNI8\n5G7dDJBhAgMBAAECggEAOfpPEYHZoWq4L1aycNEKTpQqFn9ginyOkZ2SQypVaWiF\nq7cHWNrx1w4AC1ZEdSWCna1BTtgMdFyQ0Vk7hkvqEmKYDllDRMYGvJouR38zjddu\nZf+nQ/jN95Op7TH08e7QmLoX/TuIsZEO8UmJAIQ/dtAFf8XgyN1UJ+AvMAWPUX/m\nqASQu6vq6pt/mz4t46hvNGGh8lxWsQERWRMJtZDN9YL87cgzyleh9oDRPOnksR5v\naLG10XvYi79+sLicHWZA0sYh1r0chJ7HE3COd5+HkyJwQEXLjkm3aabXFKoaQ2QG\nE/syam4vC/mf11vMaTR531sgmxlrs24FcwsBuJ8+aQKBgQD8UxC8K4pqYBqLQWCU\n8cGBKzqfYHiwM9irjr4Hz5ab5Dv71N5XRzEJZ/5150owemF0YBGEczd3lUQe8s0e\ndnIH8W4oBOhaz52JsKdkk2Kvm8fizf2mHwK5LsGA4PxGk1EPmVW+14zKkUCiIZEA\n/BWc6dSV+vY/bajYMTAxmUE0XwKBgQDPD0m3rfwwoBgPHkp/rbf8FI/FLVMxfVtm\nL46RCU7dQFDt7Zf9nMoy/A4Iow0gOhYDi38uDvrIWr6Xk00WjVhF81Oh5mafsSzE\nkN51AKT7lpqZi+ou23euNZZ4AWdkzXUQSNvP0sDOqqL39hgIkJVpAzTSvG4BvbAg\npDba5sZzPwKBgEYCpjoPurAZSkQpN6scCRzV6cYe9l2thQjU6lUwfBF1Gk+dmLOO\nxURe3nPIYQVib3fiz/l4HoPHnscXh2JUav9ZNb9U3UOVJ5j0sv1tB4zCJIwBq8dU\nA2VuW7JuupC6f1tcqDXziNULyGsz9Q/Y4gZPuvSCVaDzxE14GG8qnrTxAoGBAJcO\nPSZeLGRA9yxYWdspndauHXCor0+kd0BmI2jV1I3+tMvPEJn5f12QmqBca1/+YD73\nzrGIRhZSdUbZNFzmguaNLI8pKecId3NziIbtEG9moKSx+Qd0Hqyd9YbY51gXt3ZI\n4OuNghGDVN72zvO4nvd8WlX/F3X3r30wr8AkqdQ7AoGAWRKHL3fqKRNuWdp2trfX\n3P0bf0YBk2c1rnjUKGHWRX0qWJPjnncOSvle5AvmktEv7QzW6JMSALTsmuYeEDyr\n5nv2EqhJOksfoYhjbo3DHm0jLW9udaC3Qdm0fCpcKFlEVphBcvUZKZOBAPP4HNlm\n0WPNhWaoknSjkE4bWoZceNU=\n-----END PRIVATE KEY-----\n"
-```
+
+**IMPORTANT**: Never commit real API keys to GitHub. Add these values directly in Vercel Dashboard → Environment Variables.
 
 ## Deployment Steps
 

@@ -40,6 +40,7 @@ next-env.d.ts
 # Google Cloud Service Account (NEVER COMMIT)
 trade-in-vision-api-646f33683094.json
 *.json
+service-account*.json
 
 # Enhanced system build artifacts
 .next

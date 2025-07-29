@@ -149,13 +149,16 @@ backend:
     implemented: true
     working: false
     file: "app/api/ocr-mileage/route.ts"
-    stuck_count: 1
+    stuck_count: 2
     priority: "medium"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ Google Vision API authentication issues. Returns UNREADABLE for all inputs due to missing credentials configuration."
+      - working: false
+        agent: "testing"
+        comment: "❌ Google Vision API billing issue. Same root cause as other OCR endpoints - Google Cloud project requires billing to be enabled. Endpoint responds with 200 status but returns UNREADABLE due to Vision API billing error. Error handling differs from other OCR endpoints (returns 200 instead of 500)."
 
   - task: "Admin Users Management API"
     implemented: true

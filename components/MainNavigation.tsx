@@ -15,6 +15,11 @@ export default function MainNavigation() {
   const [user, setUser] = useState<any>(null)
   const [userRole, setUserRole] = useState<any>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {

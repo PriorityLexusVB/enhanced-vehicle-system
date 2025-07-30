@@ -26,7 +26,7 @@ html {
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
-      </head>
+
       <body className={GeistSans.className}>
         <MainNavigation />
         <main>{children}</main>

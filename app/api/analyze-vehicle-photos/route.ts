@@ -51,6 +51,9 @@ async function callGeminiAnalysis(photoUrls: string[], submissionData: any) {
     const { spawn } = require('child_process')
     const path = require('path')
     
+    // Debug: Check if GEMINI_API_KEY is available
+    console.log('GEMINI_API_KEY available:', process.env.GEMINI_API_KEY ? 'YES' : 'NO')
+    
     return new Promise((resolve, reject) => {
       // Prepare input data for Python service
       const inputData = {
@@ -63,7 +66,10 @@ async function callGeminiAnalysis(photoUrls: string[], submissionData: any) {
       
       // Spawn Python process with correct virtual environment
       const pythonProcess = spawn('/root/.venv/bin/python3', [pythonScript, JSON.stringify(inputData)], {
-        env: { ...process.env, GEMINI_API_KEY: process.env.GEMINI_API_KEY }
+        env: { 
+          ...process.env, 
+          GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'AIzaSyC3hPVHH1vAmN_kKDhohC-bxTCIAGv7fdY'
+        }
       })
       
       let result = ''

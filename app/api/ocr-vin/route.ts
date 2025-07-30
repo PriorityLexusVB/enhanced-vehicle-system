@@ -42,6 +42,16 @@ export async function POST(request: NextRequest) {
     const fullText = detections[0]?.description || ''
     console.log('Detected text:', fullText)
 
+    if (!fullText.trim()) {
+      return NextResponse.json({
+        vin: 'UNREADABLE',
+        confidence: 0,
+        success: false,
+        error: 'Could not detect any text in the image. Please try a clearer photo of the VIN plate.',
+        suggestion: 'Ensure the VIN plate is clearly visible and well-lit. The VIN should be 17 characters long.'
+      })
+    }
+
     // VIN pattern: 17 characters, alphanumeric (excluding I, O, Q)
     const vinPattern = /[A-HJ-NPR-Z0-9]{17}/g
     const vinMatches = fullText.replace(/\s/g, '').match(vinPattern)

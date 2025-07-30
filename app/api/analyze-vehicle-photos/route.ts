@@ -178,7 +178,7 @@ The cosmetic issues identified will require disclosure and will impact trade-in 
       analysis_type: "gemini_vision_comprehensive"
     }
 
-    return mockAnalysis
+    return getMockAnalysis(photoUrls)
   } catch (error) {
     console.error('Gemini analysis error:', error)
     return {

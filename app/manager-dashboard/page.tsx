@@ -13,7 +13,12 @@ function ManagerDashboardContent() {
   const [user, setUser] = useState<any>(null)
   const [userRole, setUserRole] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const [accessDenied, setAccessDenied] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {

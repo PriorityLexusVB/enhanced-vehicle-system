@@ -315,21 +315,47 @@ VEHICLE CONTEXT:
         }
     
     def _extract_overall_condition(self, response: str) -> str:
-        """Extract overall condition summary"""
-        lines = response.split('\n')
-        for line in lines:
-            if 'OVERALL CONDITION' in line.upper() or 'SUMMARY' in line.upper():
-                # Find the next few lines after this header
-                idx = lines.index(line)
-                summary_lines = []
-                for i in range(idx + 1, min(idx + 4, len(lines))):
-                    if lines[i].strip() and not lines[i].startswith('##'):
-                        summary_lines.append(lines[i].strip())
-                return ' '.join(summary_lines) if summary_lines else "Condition assessment completed"
-        
-        # Fallback: use first substantial paragraph
-        paragraphs = [p.strip() for p in response.split('\n\n') if len(p.strip()) > 50]
-        return paragraphs[0] if paragraphs else "Professional vehicle inspection completed"
+        """Extract overall condition summary with robust parsing"""
+        try:
+            if not response or not response.strip():
+                return "Professional vehicle inspection completed"
+            
+            lines = response.split('\n')
+            
+            # Look for specific section headers
+            condition_headers = ['OVERALL CONDITION', 'CONDITION SUMMARY', 'SUMMARY', 'OVERALL']
+            
+            for header in condition_headers:
+                for i, line in enumerate(lines):
+                    if header in line.upper():
+                        # Find the next few substantive lines after this header
+                        summary_lines = []
+                        for j in range(i + 1, min(i + 6, len(lines))):
+                            if j < len(lines):
+                                line_content = lines[j].strip()
+                                if line_content and not line_content.startswith('#') and len(line_content) > 10:
+                                    summary_lines.append(line_content)
+                                    if len(summary_lines) >= 2:  # Get a good summary
+                                        break
+                        
+                        if summary_lines:
+                            return ' '.join(summary_lines)[:500]  # Limit length
+            
+            # Fallback: use first substantial paragraph
+            paragraphs = [p.strip() for p in response.split('\n\n') if len(p.strip()) > 50]
+            if paragraphs:
+                return paragraphs[0][:500]  # Limit length
+            
+            # Final fallback: use first substantial sentence
+            sentences = [s.strip() for s in response.split('.') if len(s.strip()) > 30]
+            if sentences:
+                return sentences[0][:300] + '.'
+                
+            return "Professional vehicle inspection completed"
+            
+        except Exception as e:
+            print(f"Error extracting overall condition: {str(e)}")
+            return "Professional vehicle inspection completed"
     
     def _extract_condition_category(self, response: str, category: str) -> str:
         """Extract specific condition category details"""

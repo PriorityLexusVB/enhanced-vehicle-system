@@ -29,6 +29,7 @@ export default function AdminPanel() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [users, setUsers] = useState<AppUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [activeView, setActiveView] = useState<'users' | 'analytics'>('users');
@@ -44,6 +45,10 @@ export default function AdminPanel() {
   // UI state
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Check authentication and role on mount
   useEffect(() => {

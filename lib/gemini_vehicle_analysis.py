@@ -407,22 +407,49 @@ VEHICLE CONTEXT:
             return f"{category.title()} condition within normal parameters"
     
     def _extract_severity_ratings(self, response: str) -> dict:
-        """Extract severity assessments"""
-        severity_counts = {
-            "minor": response.upper().count("MINOR"),
-            "moderate": response.upper().count("MODERATE"), 
-            "major": response.upper().count("MAJOR"),
-            "severe": response.upper().count("SEVERE")
-        }
-        
-        # Determine primary severity
-        max_severity = max(severity_counts, key=severity_counts.get)
-        
-        return {
-            "primary_severity": max_severity,
-            "severity_distribution": severity_counts,
-            "total_issues": sum(severity_counts.values())
-        }
+        """Extract severity assessments with robust parsing"""
+        try:
+            if not response:
+                return {
+                    "primary_severity": "minor",
+                    "severity_distribution": {"minor": 0, "moderate": 0, "major": 0, "severe": 0},
+                    "total_issues": 0
+                }
+            
+            response_upper = response.upper()
+            severity_counts = {
+                "minor": response_upper.count("MINOR") + response_upper.count("LIGHT") + response_upper.count("SMALL"),
+                "moderate": response_upper.count("MODERATE") + response_upper.count("MEDIUM") + response_upper.count("NOTICEABLE"),
+                "major": response_upper.count("MAJOR") + response_upper.count("SIGNIFICANT") + response_upper.count("LARGE"),
+                "severe": response_upper.count("SEVERE") + response_upper.count("CRITICAL") + response_upper.count("EXTENSIVE")
+            }
+            
+            # Determine primary severity - if no issues found, default to minor
+            total_issues = sum(severity_counts.values())
+            if total_issues == 0:
+                # Look for general damage indicators
+                damage_indicators = ["DAMAGE", "SCRATCH", "DENT", "WEAR", "ISSUE", "PROBLEM", "DEFECT"]
+                for indicator in damage_indicators:
+                    if indicator in response_upper:
+                        severity_counts["minor"] = 1
+                        total_issues = 1
+                        break
+            
+            max_severity = max(severity_counts, key=severity_counts.get) if total_issues > 0 else "minor"
+            
+            return {
+                "primary_severity": max_severity,
+                "severity_distribution": severity_counts,
+                "total_issues": max(total_issues, 1)  # Ensure at least 1 if we have any response
+            }
+            
+        except Exception as e:
+            print(f"Error extracting severity ratings: {str(e)}")
+            return {
+                "primary_severity": "minor",
+                "severity_distribution": {"minor": 1, "moderate": 0, "major": 0, "severe": 0},
+                "total_issues": 1
+            }
     
     def _extract_trade_in_factors(self, response: str) -> list:
         """Extract trade-in impact factors"""

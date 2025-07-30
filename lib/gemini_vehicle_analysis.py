@@ -141,19 +141,31 @@ class GeminiVehicleAnalysis:
             image_contents = []
             for i, photo_url in enumerate(photo_urls):
                 try:
-                    # For now, we'll use placeholder analysis since we need the actual image processing
-                    # In production, you'd download and convert images to base64
                     print(f"Processing photo {i+1}: {photo_url}")
                     
-                    # Create image content (placeholder - would need actual base64 conversion)
-                    image_content = ImageContent(
-                        image_base64=self._create_placeholder_base64()  # Placeholder
-                    )
-                    image_contents.append(image_content)
+                    # Download and convert actual image to base64
+                    image_base64 = await self._download_and_convert_image(photo_url)
+                    if image_base64:
+                        image_content = ImageContent(image_base64=image_base64)
+                        image_contents.append(image_content)
+                    else:
+                        print(f"Failed to process photo {i+1}, using placeholder")
+                        # Fallback to placeholder if download fails
+                        image_content = ImageContent(
+                            image_base64=self._create_placeholder_base64()
+                        )
+                        image_contents.append(image_content)
                     
                 except Exception as e:
                     print(f"Error processing photo {i+1}: {str(e)}")
-                    continue
+                    # Use placeholder as fallback
+                    try:
+                        image_content = ImageContent(
+                            image_base64=self._create_placeholder_base64()
+                        )
+                        image_contents.append(image_content)
+                    except:
+                        continue
             
             if not image_contents:
                 return self._create_error_response("No valid images to analyze")

@@ -61,8 +61,8 @@ async function callGeminiAnalysis(photoUrls: string[], submissionData: any) {
       // Path to Python service
       const pythonScript = path.join(process.cwd(), 'lib', 'gemini_analysis_service.py')
       
-      // Spawn Python process
-      const pythonProcess = spawn('python3', [pythonScript, JSON.stringify(inputData)], {
+      // Spawn Python process with correct virtual environment
+      const pythonProcess = spawn('/root/.venv/bin/python3', [pythonScript, JSON.stringify(inputData)], {
         env: { ...process.env, GEMINI_API_KEY: process.env.GEMINI_API_KEY }
       })
       

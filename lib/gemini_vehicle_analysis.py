@@ -358,27 +358,53 @@ VEHICLE CONTEXT:
             return "Professional vehicle inspection completed"
     
     def _extract_condition_category(self, response: str, category: str) -> str:
-        """Extract specific condition category details"""
-        category_keywords = {
-            "exterior": ["EXTERIOR", "PAINT", "BODY", "BUMPER", "DENTS"],
-            "interior": ["INTERIOR", "SEATS", "DASHBOARD", "CARPET"],
-            "mechanical": ["MECHANICAL", "ENGINE", "TIRE", "FLUID"]
-        }
-        
-        keywords = category_keywords.get(category.lower(), [])
-        lines = response.split('\n')
-        
-        for keyword in keywords:
-            for i, line in enumerate(lines):
-                if keyword in line.upper():
-                    # Collect related lines
-                    category_lines = []
-                    for j in range(i, min(i + 5, len(lines))):
-                        if lines[j].strip() and not lines[j].startswith('#'):
-                            category_lines.append(lines[j].strip())
-                    return ' '.join(category_lines) if category_lines else f"{category} condition noted"
-        
-        return f"{category.title()} condition within normal parameters"
+        """Extract specific condition category details with robust parsing"""
+        try:
+            if not response or not response.strip():
+                return f"{category.title()} condition within normal parameters"
+            
+            category_keywords = {
+                "exterior": ["EXTERIOR", "PAINT", "BODY", "BUMPER", "DENTS", "SCRATCHES", "DAMAGE"],
+                "interior": ["INTERIOR", "SEATS", "DASHBOARD", "CARPET", "UPHOLSTERY", "CABIN"],
+                "mechanical": ["MECHANICAL", "ENGINE", "TIRE", "FLUID", "TRANSMISSION", "BRAKE"]
+            }
+            
+            keywords = category_keywords.get(category.lower(), [category.upper()])
+            lines = response.split('\n')
+            
+            # Look for category-specific sections
+            for keyword in keywords:
+                for i, line in enumerate(lines):
+                    if keyword in line.upper():
+                        # Collect related lines
+                        category_lines = []
+                        for j in range(i, min(i + 8, len(lines))):
+                            if j < len(lines):
+                                line_content = lines[j].strip()
+                                if line_content and not line_content.startswith('#'):
+                                    category_lines.append(line_content)
+                                    if len(category_lines) >= 3:  # Get enough detail
+                                        break
+                        
+                        if category_lines:
+                            result = ' '.join(category_lines)[:400]  # Limit length
+                            return result if len(result) > 20 else f"{category.title()} condition noted"
+            
+            # Fallback: search for category-related content anywhere
+            relevant_lines = []
+            for line in lines:
+                if any(keyword.lower() in line.lower() for keyword in keywords[:3]):  # Use top 3 keywords
+                    if len(line.strip()) > 15:
+                        relevant_lines.append(line.strip())
+            
+            if relevant_lines:
+                return ' '.join(relevant_lines[:2])[:300]  # Limit and use first 2 relevant lines
+            
+            return f"{category.title()} condition within normal parameters"
+            
+        except Exception as e:
+            print(f"Error extracting {category} condition: {str(e)}")
+            return f"{category.title()} condition within normal parameters"
     
     def _extract_severity_ratings(self, response: str) -> dict:
         """Extract severity assessments"""

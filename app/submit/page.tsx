@@ -46,7 +46,7 @@ function SubmitPageContent() {
     return () => unsubscribe()
   }, [router])
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center space-x-2">

@@ -115,7 +115,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       licensePlate: 'UNREADABLE',
       confidence: 0,
-      error: 'OCR processing failed'
+      success: false,
+      error: 'Failed to process the license plate image. Please try again with a different photo.',
+      suggestion: 'Ensure the image is clear, well-lit, and shows the complete license plate'
     }, { status: 500 })
   }
 }

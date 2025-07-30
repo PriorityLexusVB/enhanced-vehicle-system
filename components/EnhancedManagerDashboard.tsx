@@ -109,22 +109,67 @@ export default function EnhancedManagerDashboard({ userEmail, onLogout }: Enhanc
     }
   }
 
-  const analyzeVehiclePhotos = async (submission: Submission) => {
+  const [analyzingPhotos, setAnalyzingPhotos] = useState<string | null>(null)
+  const [analysisResults, setAnalysisResults] = useState<{ [key: string]: any }>({})
+
+  const analyzeVehiclePhotosReal = async (submission: Submission) => {
     if (!submission.photoUrls || submission.photoUrls.length === 0) {
-      return null
+      toast({
+        title: "No Photos",
+        description: "This submission has no photos to analyze.",
+        variant: "destructive"
+      })
+      return
     }
 
-    // Simulate photo analysis (in real implementation, this would call Google Vision API)
-    const analysisResults = {
-      exteriorCondition: determineExteriorCondition(submission),
-      interiorCondition: determineInteriorCondition(submission),
-      damageAssessment: analyzeDamage(submission),
-      overallGrade: calculateOverallGrade(submission),
-      estimatedRepairCost: estimateRepairCost(submission),
-      confidenceScore: Math.floor(Math.random() * 15) + 85 // 85-100%
-    }
+    setAnalyzingPhotos(submission.id)
+    
+    try {
+      const response = await fetch('/api/analyze-vehicle-photos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          submissionId: submission.id,
+          photoUrls: submission.photoUrls,
+          submissionData: {
+            vin: submission.vin,
+            year: submission.year,
+            make: submission.make,
+            model: submission.model,
+            mileage: submission.mileage,
+            notes: submission.notes
+          }
+        })
+      })
 
-    return analysisResults
+      const result = await response.json()
+      
+      if (result.success) {
+        setAnalysisResults(prev => ({
+          ...prev,
+          [submission.id]: result.data
+        }))
+        
+        toast({
+          title: "Analysis Complete",
+          description: `Successfully analyzed ${result.data.photosAnalyzed} photos using AI`,
+        })
+      } else {
+        throw new Error(result.error)
+      }
+      
+    } catch (error) {
+      console.error('Photo analysis error:', error)
+      toast({
+        title: "Analysis Failed",
+        description: "Failed to analyze vehicle photos. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setAnalyzingPhotos(null)
+    }
   }
 
   const determineExteriorCondition = (submission: Submission): string => {

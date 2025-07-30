@@ -62,7 +62,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("OCR processing error:", error);
-    return NextResponse.json({ mileage: "UNREADABLE" });
+    return NextResponse.json({ 
+      mileage: "UNREADABLE",
+      success: false,
+      error: "Failed to process the image. Please try again with a different photo.",
+      suggestion: "Ensure the image is clear, well-lit, and shows the odometer display"
+    }, { status: 500 });
   }
 }
 

@@ -97,11 +97,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (extractedVin === 'UNREADABLE') {
+      return NextResponse.json({
+        vin: 'UNREADABLE',
+        confidence: 0,
+        rawText: fullText.substring(0, 200),
+        success: false,
+        error: 'Could not find a valid 17-character VIN in the image. Please try a clearer photo.',
+        suggestion: 'Make sure the entire VIN plate is visible and the characters are clear. VINs are exactly 17 characters long.',
+        detectedText: fullText.substring(0, 100)
+      })
+    }
+
     return NextResponse.json({
       vin: extractedVin,
       confidence: confidence,
-      rawText: fullText.substring(0, 200), // First 200 chars for debugging
-      success: extractedVin !== 'UNREADABLE'
+      rawText: fullText.substring(0, 200),
+      success: true
     })
 
   } catch (error) {

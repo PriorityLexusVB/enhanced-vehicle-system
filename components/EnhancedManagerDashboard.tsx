@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Car, FileText, Users, TrendingUp, Calendar, Clock, Loader2, RefreshCw, DollarSign, Smartphone, Camera, AlertTriangle, CheckCircle, Eye, BarChart } from "lucide-react"
+import { Car, FileText, Users, TrendingUp, Calendar, Clock, Loader2, RefreshCw, DollarSign, Smartphone, Camera, AlertTriangle, CheckCircle, Eye, BarChart, Zap, Brain } from "lucide-react"
 import Image from "next/image"
+import { toast } from "@/hooks/use-toast"
 import { toast } from "@/hooks/use-toast"
 
 interface Submission {

@@ -127,8 +127,9 @@ class GeminiAITester:
         url = f"{self.base_url}/api/analyze-vehicle-photos"
         
         test_data = {
-            "photos": [],  # Empty photos array
-            "vehicleInfo": {
+            "submissionId": "test_submission_456",
+            "photoUrls": [],  # Empty photos array
+            "submissionData": {
                 "vin": "1HGBH41JXMN109186",
                 "make": "Honda",
                 "model": "Civic",

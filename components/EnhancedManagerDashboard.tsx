@@ -766,9 +766,9 @@ export default function EnhancedManagerDashboard({ userEmail, onLogout }: Enhanc
                           <div className="space-y-4">
                             <h4 className="font-semibold text-gray-800 flex items-center gap-2">
                               <Camera className="w-4 h-4" />
-                              Photo Analysis Report
+                              AI Photo Analysis Report
                             </h4>
-                            {generatePhotoAnalysisReport(submission)}
+                            {generateRealPhotoAnalysisReport(submission)}
                           </div>
                         ) : (
                           <div className="text-center py-8 text-gray-500">

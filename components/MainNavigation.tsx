@@ -50,8 +50,8 @@ export default function MainNavigation() {
     setMobileMenuOpen(false)
   }
 
-  // Don't show navigation if not logged in
-  if (!user || !userRole) {
+  // Don't show navigation if not logged in or not mounted (prevent hydration mismatch)
+  if (!mounted || !user || !userRole) {
     return null
   }
 

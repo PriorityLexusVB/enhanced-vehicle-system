@@ -10,70 +10,102 @@ from PIL import Image
 import io
 import uuid
 
-# Vehicle Inspection Dataset - Comprehensive Analysis Prompts
-VEHICLE_INSPECTION_PROMPTS = {
-    "comprehensive": """
-You are a professional vehicle appraiser conducting a detailed inspection. Analyze ALL photos provided and create a comprehensive condition report.
+# Enhanced Vehicle Inspection Dataset - Professional Grade Analysis Prompts
+ENHANCED_VEHICLE_INSPECTION_PROMPTS = {
+    "comprehensive_professional": """
+You are a certified automotive appraiser with expertise in trade-in valuations. Conduct a comprehensive vehicle inspection analysis using the provided photos.
 
 ANALYSIS REQUIREMENTS:
-- Examine EVERY photo carefully for defects, damage, and wear
-- Identify specific issues that would affect trade-in value
-- Focus on factual observations, NOT pricing estimates
-- Categorize findings by severity and location
+- Examine EVERY photo methodically for defects, damage, and wear
+- Provide specific locations, measurements, and severity ratings
+- Focus on factual observations that affect trade-in value
+- Use professional automotive terminology
+- Include confidence scores for each detection
 
 DAMAGE CATEGORIES TO ASSESS:
-1. EXTERIOR CONDITION:
-   - Paint scratches, chips, fading, oxidation
-   - Dents, dings, creases, collision damage
-   - Rust, corrosion, body panel alignment
-   - Bumper condition, trim damage
-   - Headlight/taillight condition, window damage
 
-2. INTERIOR CONDITION:
-   - Seat wear, tears, stains, burn marks
-   - Dashboard cracks, scratches, missing pieces
-   - Carpet/floor mat condition, odors
-   - Electronics functionality, trim condition
-   - Door panel wear, window operation
+1. EXTERIOR BODY DAMAGE:
+   Dents: Document location (front fender, driver door, hood, roof, trunk, quarter panel), size (diameter in cm), and severity (light <2cm, moderate 2-5cm, severe >5cm)
+   Scratches: Note location, length (cm), depth (surface, moderate, deep gouges), and type
+   Cracks: Identify on body panels, bumpers, plastic components, glass (windshield, windows, lamp covers)
+   Paint Damage: Detect repaint evidence, color mismatches, orange peel texture, clear coat damage, stone chips, peeling lacquer
+   Missing/Broken Parts: Headlights, taillights, fog lights, grilles, emblems, trim, mirrors, handles, antenna, wipers, hubcaps
+   Hail Damage: Identify circular depressions and impact patterns
+   Panel Gaps: Assess alignment between doors, fenders, hood, trunk
+   Hidden Modifications: Detect signs of prior repairs or non-factory alterations
 
-3. MECHANICAL VISIBLE ISSUES:
-   - Fluid leaks, corrosion under hood
-   - Tire wear patterns, tread depth
-   - Suspension components, visible damage
-   - Exhaust system condition
-   - General maintenance indicators
+2. TIRES & WHEELS:
+   Tread Depth: Estimate depth (mm) for each tire position, categorize wear level (excellent >6mm, good 4-6mm, fair 2-4mm, poor <2mm)
+   Sidewall Condition: Document bubbles, cracks, cuts, dry rot, manufacturing dates
+   Rim Damage: Identify curb rash, bends, cracks on each wheel
+   Tire Specifications: Read size, brand, model if visible
+   Alignment Issues: Assess from wear patterns (inside edge, outside edge, center wear)
+   Mismatched Tires: Note different brands/sizes on same axle
+   Flat/Low Pressure: Identify deflated tires
 
-SEVERITY LEVELS:
-- MINOR: Cosmetic issues, normal wear
-- MODERATE: Noticeable defects affecting appearance
-- MAJOR: Significant damage requiring repair
-- SEVERE: Safety concerns or major structural issues
+3. UNDERCARRIAGE & MECHANICAL:
+   Fluid Leaks: Classify leak types (oil, coolant, transmission, brake fluid) and severity
+   Corrosion/Rust: Map rust locations and severity (surface, moderate, severe structural)
+   Structural Damage: Detect frame bends, cracks, deformation
+   Missing Components: Exhaust parts, catalytic converters, shields, suspension components
+   Mechanical Wear: Visible component deterioration
 
-FORMAT YOUR RESPONSE AS:
-1. OVERALL CONDITION SUMMARY (2-3 sentences)
-2. DETAILED FINDINGS by category
-3. TRADE-IN IMPACT FACTORS (factual devaluation reasons)
-4. RECOMMENDED DISCLOSURES (issues buyer should know)
+4. INTERIOR CONDITION:
+   Upholstery: Document tears, wear patterns, stains, burns on seats, carpets, headliner
+   Components: Note missing/broken knobs, buttons, vents, trim, dashboard elements
+   Electronics: Assess visible condition of displays, controls, lighting
+   Cleanliness: Overall interior maintenance level
 
-Be thorough, factual, and professional. Focus on what affects trade-in value, not repair costs.
+SEVERITY RATINGS:
+- LIGHT: Cosmetic issues, minimal impact on function or safety
+- MODERATE: Noticeable defects affecting appearance or minor function
+- MAJOR: Significant damage requiring repair, affects safety or major function  
+- SEVERE: Critical safety concerns, structural integrity, or major mechanical failure
+
+CONFIDENCE SCORING:
+Assign confidence percentages (60-100%) for each detection based on image clarity and certainty.
+
+OUTPUT FORMAT:
+1. OVERALL CONDITION SUMMARY (professional grade assessment)
+2. CONFIDENCE SCORE (overall inspection confidence 60-100%)
+3. VEHICLE GRADE (A+ Excellent, A Good, B+ Fair, B Poor, C Critical)
+4. DETAILED FINDINGS BY CATEGORY (with specific measurements and locations)
+5. SEVERITY DISTRIBUTION (count by Light/Moderate/Major/Severe)
+6. HOTSPOT ANALYSIS (areas with concentrated damage)
+7. TRADE-IN DEVALUATION FACTORS (factual impact statements, no pricing)
+8. REQUIRED DISCLOSURES (safety, legal, structural concerns)
+9. PHOTO-SPECIFIC ANNOTATIONS (bounding box coordinates for overlays)
+
+Provide thorough, professional analysis suitable for trade-in documentation and customer transparency.
 """,
 
-    "exterior_focus": """
-Focus specifically on exterior condition analysis:
-- Paint quality, scratches, chips, fading
-- Body damage: dents, dings, collision evidence
-- Rust, corrosion, panel alignment issues
-- Trim, bumpers, lights, glass condition
-Provide detailed exterior assessment for trade-in evaluation.
+    "bounding_box_detection": """
+For each detected issue, provide precise bounding box coordinates for photo overlay annotations:
+
+FORMAT: [photo_index, x1, y1, x2, y2, detection_type, severity, confidence]
+
+DETECTION TYPES:
+- dent, scratch, crack, paint_damage, missing_part, rust, tire_wear, fluid_leak, tear, stain, broken_component
+
+SEVERITY CODES: L (Light), M (Moderate), J (Major), S (Severe)
+
+Example: [1, 145, 67, 189, 98, "dent", "M", 92]
+
+This enables precise visual overlay annotations for each detected issue.
 """,
 
-    "interior_focus": """
-Focus specifically on interior condition analysis:
-- Seat condition: wear, tears, stains
-- Dashboard and console condition
-- Carpet, floor mats, interior panels
-- Electronics, gauges, interior lighting
-Provide detailed interior assessment for trade-in evaluation.
+    "trade_in_impact_analysis": """
+Analyze each detected issue for its specific impact on trade-in value. Provide factual, professional statements:
+
+IMPACT CATEGORIES:
+- Safety Concerns: Issues affecting vehicle safety or roadworthiness
+- Structural Integrity: Frame, body, or chassis damage
+- Mechanical Function: Engine, transmission, brake, suspension issues  
+- Aesthetic Appeal: Paint, body, interior appearance factors
+- Regulatory Compliance: Emissions, safety, legal requirements
+- Future Reliability: Wear patterns indicating accelerated deterioration
+
+For each category, provide specific devaluation factors without monetary estimates.
 """
 }
 
@@ -139,7 +171,7 @@ VEHICLE CONTEXT:
 """
             
             analysis_message = UserMessage(
-                text=context + VEHICLE_INSPECTION_PROMPTS["comprehensive"],
+                text=context + ENHANCED_VEHICLE_INSPECTION_PROMPTS["comprehensive_professional"],
                 file_contents=image_contents
             )
             

@@ -90,11 +90,23 @@ export async function POST(request: NextRequest) {
       confidence = 0
     }
 
+    if (extractedPlate === 'UNREADABLE') {
+      return NextResponse.json({
+        licensePlate: 'UNREADABLE',
+        confidence: 0,
+        rawText: fullText.substring(0, 100),
+        success: false,
+        error: 'Could not find a valid license plate in the image. Please try a clearer photo.',
+        suggestion: 'Make sure the license plate is clearly visible, well-lit, and not partially obscured. License plates are typically 4-8 characters long.',
+        detectedText: fullText.substring(0, 100)
+      })
+    }
+
     return NextResponse.json({
       licensePlate: extractedPlate,
       confidence: confidence,
-      rawText: fullText.substring(0, 100), // First 100 chars for debugging
-      success: extractedPlate !== 'UNREADABLE',
+      rawText: fullText.substring(0, 100),
+      success: true,
       note: 'License plate OCR active - vehicle lookup requires registration database access'
     })
 

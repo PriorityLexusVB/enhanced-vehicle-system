@@ -9,6 +9,8 @@ import base64
 from PIL import Image
 import io
 import uuid
+import requests
+from urllib.parse import urlparse
 
 # Enhanced Vehicle Inspection Dataset - Professional Grade Analysis Prompts
 ENHANCED_VEHICLE_INSPECTION_PROMPTS = {

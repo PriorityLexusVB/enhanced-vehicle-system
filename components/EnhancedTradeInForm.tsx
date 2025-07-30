@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Camera, Upload, Car, CheckCircle, Loader2, Zap, Target, FileText } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
+import PhotoGuidance from "@/components/PhotoGuidance"
 
 export default function EnhancedVehicleTradeInForm() {
   const [formData, setFormData] = useState({

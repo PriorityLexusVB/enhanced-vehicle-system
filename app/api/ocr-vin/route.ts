@@ -121,7 +121,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       vin: 'UNREADABLE',
       confidence: 0,
-      error: 'OCR processing failed'
+      success: false,
+      error: 'Failed to process the VIN image. Please try again with a different photo.',
+      suggestion: 'Ensure the image is clear, well-lit, and shows the complete VIN plate'
     }, { status: 500 })
   }
 }

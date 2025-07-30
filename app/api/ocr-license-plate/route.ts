@@ -42,6 +42,16 @@ export async function POST(request: NextRequest) {
     const fullText = detections[0]?.description || ''
     console.log('Detected license plate text:', fullText)
 
+    if (!fullText.trim()) {
+      return NextResponse.json({
+        licensePlate: 'UNREADABLE',
+        confidence: 0,
+        success: false,
+        error: 'Could not detect any text in the image. Please try a clearer photo of the license plate.',
+        suggestion: 'Ensure the license plate is clearly visible, well-lit, and the characters are not obscured'
+      })
+    }
+
     // License plate patterns (US format variations)
     const platePatterns = [
       /[A-Z0-9]{2,3}[\s-]?[A-Z0-9]{3,4}/g, // ABC-1234, AB-1234, etc.

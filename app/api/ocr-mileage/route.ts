@@ -34,13 +34,32 @@ export async function POST(request: NextRequest) {
     const detectedText = result.textAnnotations?.[0]?.description || "";
 
     if (!detectedText) {
-      return NextResponse.json({ mileage: "UNREADABLE" });
+      return NextResponse.json({ 
+        mileage: "UNREADABLE",
+        success: false,
+        error: "Could not detect any text in the image. Please try a clearer photo of the odometer display.",
+        suggestion: "Ensure the odometer numbers are clearly visible and well-lit"
+      });
     }
 
     // Extract numeric values from detected text
     const mileage = extractMileageFromText(detectedText);
 
-    return NextResponse.json({ mileage });
+    if (mileage === "UNREADABLE") {
+      return NextResponse.json({ 
+        mileage: "UNREADABLE",
+        success: false,
+        error: "Could not find valid mileage numbers in the image. Please take a clearer photo of the odometer.",
+        suggestion: "Make sure the mileage numbers are clearly visible and in focus",
+        detectedText: detectedText.substring(0, 100) // Show what was detected for debugging
+      });
+    }
+
+    return NextResponse.json({ 
+      mileage,
+      success: true,
+      detectedText: detectedText.substring(0, 100)
+    });
   } catch (error) {
     console.error("OCR processing error:", error);
     return NextResponse.json({ mileage: "UNREADABLE" });

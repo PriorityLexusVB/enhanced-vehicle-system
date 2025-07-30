@@ -37,21 +37,22 @@ class GeminiAITester:
         
         url = f"{self.base_url}/api/analyze-vehicle-photos"
         
-        # Test data with realistic vehicle information
+        # Test data with correct format based on API structure
         test_data = {
-            "photos": [
-                "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
-                "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
-                "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+            "submissionId": "test_submission_123",
+            "photoUrls": [
+                "https://example.com/photo1.jpg",
+                "https://example.com/photo2.jpg",
+                "https://example.com/photo3.jpg"
             ],
-            "vehicleInfo": {
+            "submissionData": {
                 "vin": "1HGBH41JXMN109186",
                 "make": "Honda",
                 "model": "Civic",
                 "year": "1991",
-                "mileage": "87325"
-            },
-            "ownerNotes": "Minor scratches on front bumper, interior in good condition"
+                "mileage": "87325",
+                "ownerNotes": "Minor scratches on front bumper, interior in good condition"
+            }
         }
         
         try:
@@ -61,32 +62,45 @@ class GeminiAITester:
                 data = response.json()
                 
                 # Check for expected fields in response
-                expected_fields = ['overallCondition', 'exteriorObservations', 'interiorObservations', 
-                                 'mechanicalObservations', 'severityAssessment', 'tradeInImpactFactors',
-                                 'confidenceScore', 'vehicleGrade', 'detailedFindings']
-                
-                missing_fields = [field for field in expected_fields if field not in data]
-                
-                if not missing_fields:
-                    self.log_test(
-                        "Gemini AI Photo Analysis - Complete Response",
-                        True,
-                        f"All expected fields present. Grade: {data.get('vehicleGrade', 'N/A')}, Confidence: {data.get('confidenceScore', 'N/A')}%"
-                    )
+                if data.get('success') and 'data' in data:
+                    analysis_data = data['data']
+                    analysis = analysis_data.get('analysis', {})
                     
-                    # Print detailed analysis
-                    print(f"   📊 Overall Condition: {data.get('overallCondition', 'N/A')}")
-                    print(f"   🎯 Vehicle Grade: {data.get('vehicleGrade', 'N/A')}")
-                    print(f"   📈 Confidence Score: {data.get('confidenceScore', 'N/A')}%")
-                    print(f"   🔍 Severity Assessment: {len(data.get('severityAssessment', {}))} categories")
-                    print(f"   💰 Trade-in Factors: {len(data.get('tradeInImpactFactors', []))} factors identified")
+                    # Check for key analysis fields
+                    expected_fields = ['overall_condition', 'exterior_condition', 'interior_condition', 
+                                     'mechanical_observations', 'severity_assessment', 'trade_in_factors',
+                                     'confidence_score', 'vehicle_grade', 'detailed_findings']
                     
-                    return True, data
+                    missing_fields = [field for field in expected_fields if field not in analysis]
+                    
+                    if not missing_fields:
+                        self.log_test(
+                            "Gemini AI Photo Analysis - Complete Response",
+                            True,
+                            f"All expected fields present. Grade: {analysis.get('vehicle_grade', 'N/A')}, Confidence: {analysis.get('confidence_score', 'N/A')}%"
+                        )
+                        
+                        # Print detailed analysis
+                        print(f"   📊 Overall Condition: {analysis.get('overall_condition', 'N/A')[:100]}...")
+                        print(f"   🎯 Vehicle Grade: {analysis.get('vehicle_grade', 'N/A')}")
+                        print(f"   📈 Confidence Score: {analysis.get('confidence_score', 'N/A')}%")
+                        print(f"   🔍 Severity Assessment: {analysis.get('severity_assessment', {}).get('primary_severity', 'N/A')}")
+                        print(f"   💰 Trade-in Factors: {len(analysis.get('trade_in_factors', []))} factors identified")
+                        print(f"   📝 Photos Analyzed: {analysis_data.get('photosAnalyzed', 'N/A')}")
+                        
+                        return True, data
+                    else:
+                        self.log_test(
+                            "Gemini AI Photo Analysis - Incomplete Response",
+                            False,
+                            f"Missing fields: {', '.join(missing_fields)}"
+                        )
+                        return False, data
                 else:
                     self.log_test(
-                        "Gemini AI Photo Analysis - Incomplete Response",
+                        "Gemini AI Photo Analysis - Invalid Response Structure",
                         False,
-                        f"Missing fields: {', '.join(missing_fields)}"
+                        f"Response missing success/data fields: {data}"
                     )
                     return False, data
             else:

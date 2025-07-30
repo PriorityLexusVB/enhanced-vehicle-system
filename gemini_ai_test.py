@@ -172,8 +172,9 @@ class GeminiAITester:
         url = f"{self.base_url}/api/analyze-vehicle-photos"
         
         test_data = {
-            "photos": ["invalid-base64-data"],
-            "vehicleInfo": {
+            "submissionId": "test_submission_789",
+            "photoUrls": ["https://example.com/invalid-photo.jpg"],
+            "submissionData": {
                 "vin": "INVALID",
                 "make": "",
                 "model": "",

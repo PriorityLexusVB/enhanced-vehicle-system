@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Camera, Upload, Car, CheckCircle, Loader2, Zap, Target, FileText } from "lucide-react"
+import { Camera, Upload, Car, CheckCircle, Loader2, Zap, Target, FileText, Eye } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import PhotoGuidance from "@/components/PhotoGuidance"
 

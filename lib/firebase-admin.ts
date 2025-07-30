@@ -22,38 +22,59 @@ export interface AppUser {
 // Simulate admin operations using client SDK
 export const adminOperations = {
   async createUser(userData: CreateUserData) {
-    // Create user with Firebase Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-    
-    // Create user document in Firestore
-    await setDoc(doc(db, 'users', userCredential.user.uid), {
-      email: userData.email,
-      role: userData.role,
-      createdAt: serverTimestamp(),
-    });
+    try {
+      // Create user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+      
+      // Create user document in Firestore
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        email: userData.email,
+        role: userData.role,
+        createdAt: serverTimestamp(),
+      });
 
-    return {
-      uid: userCredential.user.uid,
-      email: userData.email,
-      role: userData.role,
-    };
+      return {
+        uid: userCredential.user.uid,
+        email: userData.email,
+        role: userData.role,
+      };
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   },
 
   async getAllUsers(): Promise<AppUser[]> {
-    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
-      uid: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
-    } as AppUser));
+    try {
+      // Only run on client side
+      if (typeof window === 'undefined') {
+        console.log('Skipping user fetch during build time');
+        return [];
+      }
+
+      const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      
+      return querySnapshot.docs.map(doc => ({
+        uid: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
+      } as AppUser));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return [];
+    }
   },
 
   async deleteUser(uid: string) {
-    // Note: This only deletes from Firestore
-    // In production, you'd also delete from Firebase Auth using Admin SDK
-    await deleteDoc(doc(db, 'users', uid));
-    return { success: true };
+    try {
+      // Note: This only deletes from Firestore
+      // In production, you'd also delete from Firebase Auth using Admin SDK
+      await deleteDoc(doc(db, 'users', uid));
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
   }
 };

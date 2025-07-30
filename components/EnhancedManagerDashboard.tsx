@@ -237,69 +237,172 @@ export default function EnhancedManagerDashboard({ userEmail, onLogout }: Enhanc
     return baseCosts[condition as keyof typeof baseCosts] || 0
   }
 
-  const generatePhotoAnalysisReport = async (submission: Submission) => {
-    const analysis = await analyzeVehiclePhotos(submission)
-    if (!analysis) return null
+  const generateRealPhotoAnalysisReport = (submission: Submission) => {
+    const analysis = analysisResults[submission.id]
+    if (!analysis) {
+      return (
+        <div className="text-center py-8">
+          <Brain className="w-16 h-16 mx-auto mb-4 text-blue-400" />
+          <h3 className="text-lg font-semibold mb-2">AI Photo Analysis Available</h3>
+          <p className="text-gray-600 mb-4">Click below to analyze vehicle photos with advanced AI</p>
+          <Button 
+            onClick={() => analyzeVehiclePhotosReal(submission)}
+            disabled={analyzingPhotos === submission.id}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+          >
+            {analyzingPhotos === submission.id ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Analyzing {submission.photoUrls?.length || 0} Photos...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 mr-2" />
+                Analyze Vehicle Photos with AI
+              </>
+            )}
+          </Button>
+        </div>
+      )
+    }
 
+    const analysisData = analysis.analysis
+    
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-6">
+        {/* Analysis Header */}
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-full">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-green-800">AI Analysis Complete</h3>
+                <p className="text-sm text-green-600">
+                  Analyzed {analysis.photosAnalyzed} photos • Grade: {analysisData.vehicle_grade} • 
+                  Confidence: {analysisData.confidence_score}%
+                </p>
+              </div>
+            </div>
+            <Badge className="bg-blue-100 text-blue-800">
+              Gemini Vision AI
+            </Badge>
+          </div>
+        </div>
+
+        {/* Overall Condition Summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-blue-600" />
+              Overall Condition Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700 leading-relaxed">
+              {analysisData.overall_condition}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Condition Categories */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Eye className="w-5 h-5 text-blue-600" />
-                <span className="font-medium">Exterior</span>
+              <div className="flex items-center gap-2 mb-2">
+                <Car className="w-5 h-5 text-blue-600" />
+                <span className="font-medium">Exterior Condition</span>
               </div>
-              <p className="text-2xl font-bold text-blue-700">{analysis.exteriorCondition}</p>
+              <p className="text-sm text-blue-700">
+                {analysisData.exterior_condition}
+              </p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-green-50 to-green-100">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Car className="w-5 h-5 text-green-600" />
-                <span className="font-medium">Interior</span>
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-5 h-5 text-green-600" />
+                <span className="font-medium">Interior Condition</span>
               </div>
-              <p className="text-2xl font-bold text-green-700">{analysis.interiorCondition}</p>
+              <p className="text-sm text-green-700">
+                {analysisData.interior_condition}
+              </p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mb-2">
                 <BarChart className="w-5 h-5 text-purple-600" />
-                <span className="font-medium">Grade</span>
+                <span className="font-medium">Mechanical</span>
               </div>
-              <p className="text-2xl font-bold text-purple-700">{analysis.overallGrade}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-orange-600" />
-                <span className="font-medium">Repair Est.</span>
-              </div>
-              <p className="text-2xl font-bold text-orange-700">${analysis.estimatedRepairCost.toLocaleString()}</p>
+              <p className="text-sm text-purple-700">
+                {analysisData.mechanical_observations}
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {analysis.damageAssessment.length > 0 && (
+        {/* Severity Assessment */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-orange-600" />
+              Issue Severity Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {Object.entries(analysisData.severity_assessment.severity_distribution).map(([severity, count]) => (
+                <div key={severity} className="text-center">
+                  <div className="text-2xl font-bold text-gray-800">{count}</div>
+                  <div className="text-sm text-gray-600 capitalize">{severity}</div>
+                </div>
+              ))}
+            </div>
+            <div className="text-sm text-gray-600">
+              Primary Severity Level: <span className="font-semibold capitalize">{analysisData.severity_assessment.primary_severity}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Trade-In Impact Factors */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingDown className="w-5 h-5 text-red-600" />
+              Trade-In Devaluation Factors
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {analysisData.trade_in_factors.map((factor: string, index: number) => (
+                <div key={index} className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-sm text-gray-700">{factor}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recommended Disclosures */}
+        {analysisData.recommended_disclosures.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                Damage Assessment
+                <FileText className="w-5 h-5 text-orange-600" />
+                Required Disclosures
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {analysis.damageAssessment.map((damage, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-yellow-700">
-                      {damage}
-                    </Badge>
+                {analysisData.recommended_disclosures.map((disclosure: string, index: number) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-gray-700">{disclosure}</p>
                   </div>
                 ))}
               </div>
@@ -307,16 +410,17 @@ export default function EnhancedManagerDashboard({ userEmail, onLogout }: Enhanc
           </Card>
         )}
 
+        {/* Photo Gallery */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Camera className="w-5 h-5 text-blue-600" />
-              Photo Gallery ({submission.photoUrls.length} photos)
+              Analyzed Photos ({submission.photoUrls?.length || 0})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {submission.photoUrls.map((url, index) => (
+              {submission.photoUrls?.map((url, index) => (
                 <div key={index} className="relative aspect-square">
                   <Image
                     src={url}
@@ -325,25 +429,33 @@ export default function EnhancedManagerDashboard({ userEmail, onLogout }: Enhanc
                     className="object-cover rounded-lg border"
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                   />
+                  <div className="absolute top-2 right-2">
+                    <Badge className="bg-green-100 text-green-800 text-xs">
+                      ✓ Analyzed
+                    </Badge>
+                  </div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
 
+        {/* Full Detailed Report */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              Analysis Confidence: {analysis.confidenceScore}%
+              <FileText className="w-5 h-5 text-gray-600" />
+              Detailed Analysis Report
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-sm text-green-700">
-                Photo analysis completed using advanced computer vision. 
-                Confidence score indicates reliability of automated assessment.
-              </p>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono">
+                {analysisData.detailed_findings}
+              </pre>
+            </div>
+            <div className="mt-4 text-xs text-gray-500">
+              Analysis completed: {new Date(analysisData.analysis_timestamp).toLocaleString()}
             </div>
           </CardContent>
         </Card>

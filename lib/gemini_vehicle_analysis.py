@@ -201,6 +201,85 @@ VEHICLE CONTEXT:
             print(f"Error in Gemini analysis: {str(e)}")
             return self._create_error_response(str(e))
     
+    async def _download_and_convert_image(self, photo_url: str) -> str:
+        """
+        Download image from URL and convert to base64
+        
+        Args:
+            photo_url: URL of the image to download
+        
+        Returns:
+            Base64 encoded image string
+        """
+        try:
+            # Handle different URL types
+            if photo_url.startswith('data:image'):
+                # Data URL - extract base64 part
+                if ',' in photo_url:
+                    return photo_url.split(',')[1]
+                return photo_url
+            
+            elif photo_url.startswith(('http://', 'https://')):
+                # HTTP URL - download the image
+                print(f"Downloading image from: {photo_url}")
+                
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                
+                response = requests.get(photo_url, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                # Check if it's an image
+                content_type = response.headers.get('content-type', '')
+                if not content_type.startswith('image/'):
+                    print(f"Warning: URL does not appear to be an image (content-type: {content_type})")
+                
+                # Convert to PIL Image to ensure it's valid and optimize
+                image = Image.open(io.BytesIO(response.content))
+                
+                # Convert to RGB if necessary (for PNG with transparency)
+                if image.mode in ('RGBA', 'LA', 'P'):
+                    background = Image.new('RGB', image.size, (255, 255, 255))
+                    if image.mode == 'P':
+                        image = image.convert('RGBA')
+                    background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+                    image = background
+                
+                # Resize if too large (max 2048x2048 for Gemini)
+                max_size = 2048
+                if image.width > max_size or image.height > max_size:
+                    image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+                    print(f"Resized image to {image.width}x{image.height}")
+                
+                # Convert to base64
+                buffer = io.BytesIO()
+                image.save(buffer, format='JPEG', quality=85, optimize=True)
+                img_str = base64.b64encode(buffer.getvalue()).decode()
+                
+                print(f"Successfully converted image to base64 ({len(img_str)} characters)")
+                return img_str
+                
+            elif photo_url.startswith('gs://'):
+                # Google Cloud Storage URL
+                print(f"Warning: Google Storage URLs not implemented yet: {photo_url}")
+                return None
+                
+            else:
+                # Local file path or unknown format
+                print(f"Warning: Unsupported URL format: {photo_url}")
+                return None
+                
+        except requests.RequestException as e:
+            print(f"Network error downloading image: {str(e)}")
+            return None
+        except Image.UnidentifiedImageError as e:
+            print(f"Invalid image format: {str(e)}")
+            return None
+        except Exception as e:
+            print(f"Error converting image: {str(e)}")
+            return None
+
     def _create_placeholder_base64(self) -> str:
         """Create a small placeholder image for testing"""
         # Create a small test image

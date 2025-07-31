@@ -449,7 +449,7 @@ export default function EnhancedVehicleTradeInForm() {
           <MobileStepIndicator />
         </div>
 
-        <div className="p-4 pb-20">
+        <div className="p-3 pb-24">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Step 0: Scan VIN or License Plate */}
             {currentStep === 0 && (

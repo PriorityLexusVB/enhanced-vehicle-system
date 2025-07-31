@@ -72,101 +72,95 @@ export async function POST(request: NextRequest) {
 }
 
 function extractMileageFromText(text: string): string {
-  console.log('Extracting mileage from text:', text);
+  console.log('🔍 ADVANCED MILEAGE EXTRACTION from text:', text);
   
-  // Split text into lines for better analysis
-  const lines = text.split('\n').map(line => line.trim());
+  // Step 1: Split text into lines and clean them
+  const lines = text.split(/[\n\r]+/).map(line => line.trim()).filter(line => line.length > 0);
+  console.log('Text lines:', lines);
   
-  // Words to ignore (odometer-related but not the actual mileage)
-  const ignoreWords = ['ODO', 'ODOMETER', 'MILES', 'MI', 'MPH', 'KM', 'KMH', 
-                       'TRIP', 'RESET', 'TOTAL', 'ENGINE', 'HOURS', 'AVG', 'MAX'];
+  // Step 2: Advanced pattern matching for mileage displays
+  const mileagePatterns = [
+    /(\d{1,3}[,.]?\d{3}[,.]?\d{3})/g,  // 123,456,789 or 123.456.789
+    /(\d{1,3},\d{3},\d{3})/g,          // 123,456,789
+    /(\d{1,3}\s\d{3}\s\d{3})/g,        // 123 456 789
+    /(\d{4,6})/g,                      // 123456 (simple 4-6 digits)
+    /ODO[\s:]*(\d{4,6})/gi,            // ODO: 123456
+    /MILES[\s:]*(\d{4,6})/gi,          // MILES: 123456
+    /(\d+)\s*MI/gi,                    // 123456 MI
+    /(\d+)\s*MILES/gi                  // 123456 MILES
+  ];
   
-  // Look for lines that might contain mileage
-  const candidateLines = lines.filter(line => {
-    const upperLine = line.toUpperCase();
-    
-    // Skip lines with ignore words only
-    if (ignoreWords.some(word => upperLine.includes(word) && !(/\d{4,}/.test(line)))) {
-      return false;
+  let allCandidates: string[] = [];
+  
+  // Step 3: Extract numbers using all patterns
+  for (const pattern of mileagePatterns) {
+    const matches = text.match(pattern);
+    if (matches) {
+      matches.forEach(match => {
+        // Extract just the numbers from the match
+        const numbers = match.replace(/[^\d]/g, '');
+        if (numbers.length >= 4 && numbers.length <= 7) {
+          allCandidates.push(numbers);
+        }
+      });
     }
-    
-    // Must contain at least 4 consecutive digits
-    return /\d{4,}/.test(line);
-  });
-  
-  console.log('Candidate mileage lines:', candidateLines);
-  
-  // Extract all numeric sequences from candidate lines
-  let allNumbers = [];
-  
-  for (const line of candidateLines) {
-    // Find sequences of 4-6 digits (typical mileage range)
-    const numbers = line.match(/\d{4,6}/g) || [];
-    allNumbers.push(...numbers);
   }
   
-  // If no candidates from filtered lines, check all text
-  if (allNumbers.length === 0) {
-    allNumbers = text.match(/\d{4,6}/g) || [];
-  }
+  // Step 4: Look for clustered digits (common in digital odometers)
+  const digitClusters = text.match(/\d{4,7}/g) || [];
+  allCandidates.push(...digitClusters);
   
-  console.log('All found numbers:', allNumbers);
+  // Remove duplicates
+  allCandidates = [...new Set(allCandidates)];
+  console.log('All mileage candidates found:', allCandidates);
   
-  if (allNumbers.length === 0) {
+  if (allCandidates.length === 0) {
     return "UNREADABLE";
   }
-
-  // Filter out obvious non-mileage numbers
-  const filteredNumbers = allNumbers.filter(num => {
-    const value = parseInt(num);
-    // Exclude:
-    // - Years (1900-2030)
-    // - Numbers too small (< 10,000 is unusual for mileage)
-    // - Numbers too large (> 999,999 is unrealistic)
-    // - Obvious speedometer readings (> 200 and < 1000)
-    return !(value >= 1900 && value <= 2030) && 
-           value >= 10000 && 
-           value <= 999999 &&
-           !(value >= 200 && value < 1000);
+  
+  // Step 5: Advanced filtering and scoring
+  const scoredCandidates = allCandidates.map(candidate => {
+    const value = parseInt(candidate);
+    let score = 0;
+    
+    // Length scoring (5-6 digits most common)
+    if (candidate.length === 5) score += 30;
+    else if (candidate.length === 6) score += 25;
+    else if (candidate.length === 4) score += 15;
+    else if (candidate.length === 7) score += 10;
+    
+    // Realistic mileage range scoring
+    if (value >= 10000 && value <= 300000) score += 40;      // Very realistic
+    else if (value >= 5000 && value <= 500000) score += 25;  // Realistic
+    else if (value >= 1000 && value <= 999999) score += 10;  // Possible
+    
+    // Avoid obvious non-mileage numbers
+    if (value >= 1900 && value <= 2030) score -= 50;         // Years
+    if (value < 1000) score -= 30;                           // Too low
+    if (value > 999999) score -= 30;                         // Too high
+    
+    // Common mileage patterns bonus
+    if (value % 1000 === 0) score += 5;                      // Round thousands
+    if (candidate.endsWith('000')) score += 3;               // Ends in 000
+    
+    // Penalize obviously wrong patterns
+    if (/^(\d)\1{3,}$/.test(candidate)) score -= 20;         // All same digits (1111)
+    if (candidate === '12345' || candidate === '54321') score -= 30; // Sequential
+    
+    console.log(`Candidate ${candidate} (${value}): score ${score}`);
+    
+    return { candidate, value, score };
   });
   
-  console.log('Filtered mileage numbers:', filteredNumbers);
-
-  if (filteredNumbers.length === 0) {
-    // Fallback: look for any 5-6 digit number (most likely mileage)
-    const fallbackNumbers = allNumbers.filter(num => {
-      const value = parseInt(num);
-      return num.length >= 5 && value >= 10000 && value <= 999999;
-    });
-    
-    if (fallbackNumbers.length > 0) {
-      return fallbackNumbers[0]; // Take first reasonable number
-    }
-    
-    return "UNREADABLE";
+  // Step 6: Sort by score and return best candidate
+  scoredCandidates.sort((a, b) => b.score - a.score);
+  
+  if (scoredCandidates.length > 0 && scoredCandidates[0].score > 0) {
+    const winner = scoredCandidates[0];
+    console.log(`✅ Selected mileage: ${winner.candidate} (score: ${winner.score})`);
+    return winner.candidate;
   }
-
-  // If multiple candidates, prefer:
-  // 1. Numbers in the middle range (50k-300k is common)
-  // 2. Longer numbers (6 digits over 5, 5 over 4)
-  const sortedNumbers = filteredNumbers.sort((a, b) => {
-    const valA = parseInt(a);
-    const valB = parseInt(b);
-    
-    // Prefer numbers in typical mileage range
-    const isTypicalA = valA >= 50000 && valA <= 300000;
-    const isTypicalB = valB >= 50000 && valB <= 300000;
-    
-    if (isTypicalA && !isTypicalB) return -1;
-    if (!isTypicalA && isTypicalB) return 1;
-    
-    // Then prefer longer numbers
-    if (a.length !== b.length) return b.length - a.length;
-    
-    // Finally prefer smaller numbers (less likely to be errors)
-    return valA - valB;
-  });
-
-  console.log('Final mileage selection:', sortedNumbers[0]);
-  return sortedNumbers[0];
+  
+  console.log('❌ No suitable mileage candidate found');
+  return "UNREADABLE";
 }

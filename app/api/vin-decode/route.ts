@@ -175,6 +175,9 @@ export async function POST(request: NextRequest) {
       // Fallback to mock data for development/demo
       const mockVehicleInfo = generateMockVehicleInfo(cleanVin);
       
+      // 🗄️ CACHE SAVE - Cache mock data too (short TTL)
+      setCachedVin(cleanVin, mockVehicleInfo);
+      
       return NextResponse.json({
         success: true,
         vehicle: mockVehicleInfo,

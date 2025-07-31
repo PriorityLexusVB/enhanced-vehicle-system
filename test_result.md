@@ -483,9 +483,9 @@ backend:
 
   - task: "Admin Users Management API"
     implemented: true
-    working: true
+    working: false
     file: "app/api/admin/users/route.ts"
-    stuck_count: 1
+    stuck_count: 2
     priority: "critical"
     needs_retesting: false
     status_history:
@@ -498,6 +498,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ ADMIN USERS API NOW WORKING CORRECTLY! Comprehensive testing confirms the API endpoint is fully operational. GET /api/admin/users returns 200 status with proper JSON response {'users': []}. The empty array is expected behavior when no users exist in the system, not an error condition. API is accessible, responds correctly, and follows proper REST conventions. Previous issues with Firestore security rules appear to have been resolved. The admin user management system is ready for production use."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ADMIN FUNCTIONALITY ISSUE CONFIRMED: Admin Users API returns empty array despite successful user creation. Testing shows Add User API successfully created test-user-1753981075@priority-appraisal.com with UID q4MHSYOxNoevynalrMmmmhaOXAD3, but GET /api/admin/users still returns empty users array. This confirms users are being created in Firebase Auth but not visible through the admin panel query. ROOT CAUSE: Firestore user document creation or retrieval is failing. The admin panel cannot display existing users, making user management impossible. CRITICAL PRIORITY: Fix Firestore user visibility to enable complete admin functionality."
 
   - task: "Admin Add User API"
     implemented: true

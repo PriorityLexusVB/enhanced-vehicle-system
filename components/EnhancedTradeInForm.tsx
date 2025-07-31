@@ -241,7 +241,7 @@ export default function EnhancedVehicleTradeInForm() {
               </div>
             ) : (
               // Regular photo capture area
-              <div className={`flex items-center justify-center w-full h-32 border-2 rounded-xl transition-all hover:border-primary/50 hover:bg-accent/50 ${
+              <div className={`flex items-center justify-center w-full h-40 border-2 rounded-xl transition-all hover:border-primary/50 hover:bg-accent/50 ${
                 processing ? "opacity-50 border-dashed" : ""
               } ${formData[field] ? "border-primary bg-primary/10" : "border-border border-dashed"}`}>
                 <div className="text-center">

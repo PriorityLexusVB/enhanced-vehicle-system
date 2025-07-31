@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminOperations } from '@/lib/firebase-admin';
+import { firebaseAdmin } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user using our admin operations
-    const result = await adminOperations.createUser({ email, password, role });
+    const result = await firebaseAdmin.createUser(email, password, role);
 
     return NextResponse.json({
       success: true,

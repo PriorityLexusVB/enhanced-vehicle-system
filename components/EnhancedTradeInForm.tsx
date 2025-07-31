@@ -459,19 +459,18 @@ export default function EnhancedVehicleTradeInForm() {
 
         <div className="p-3 pb-24">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Step 0: Scan VIN or License Plate */}
+            {/* Step 0: VIN Scanner Only */}
             {currentStep === 0 && (
               <Card className="shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                   <CardTitle className="flex items-center">
                     <Target className="w-5 h-5 mr-2" />
-                    Scan Vehicle ID
+                    Scan VIN
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                  {/* VIN Scanning - Top Priority */}
+                  {/* Single VIN Scanning Section */}
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-blue-600">🔍 Scan VIN (Preferred)</h3>
                     <div className="relative">
                       <Input
                         type="file"
@@ -485,27 +484,28 @@ export default function EnhancedVehicleTradeInForm() {
                         htmlFor="vinPhoto"
                         className="block cursor-pointer"
                       >
-                        <div className="flex items-center justify-center w-full h-32 border-2 border-blue-400 rounded-xl bg-blue-50 hover:bg-blue-100 transition-all">
+                        <div className="flex items-center justify-center w-full h-40 border-2 border-blue-400 rounded-xl bg-blue-50 hover:bg-blue-100 transition-all">
                           <div className="text-center">
                             {vinOcrProcessing ? (
                               <>
-                                <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
-                                <span className="text-sm font-medium">Scanning VIN...</span>
+                                <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-3" />
+                                <span className="text-base font-medium">Scanning VIN...</span>
                               </>
                             ) : formData.vinPhoto ? (
                               <>
-                                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                                <span className="text-sm font-medium text-green-600">VIN Captured</span>
+                                <CheckCircle className="w-10 h-10 text-green-600 mx-auto mb-3" />
+                                <span className="text-base font-medium text-green-600">VIN Captured</span>
                                 {vinOcrResult && (
-                                  <div className="mt-1 text-xs font-mono bg-white p-1 rounded">
+                                  <div className="mt-2 text-sm font-mono bg-white p-2 rounded border">
                                     {vinOcrResult}
                                   </div>
                                 )}
                               </>
                             ) : (
                               <>
-                                <Target className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                                <span className="text-sm font-medium">Tap to Scan VIN</span>
+                                <Target className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                                <span className="text-base font-medium">Tap to Scan VIN Plate</span>
+                                <p className="text-sm text-gray-600 mt-1">Point camera at 17-digit VIN</p>
                               </>
                             )}
                           </div>
@@ -515,8 +515,9 @@ export default function EnhancedVehicleTradeInForm() {
                     
                     {/* Show VIN result if available */}
                     {vinOcrResult && vehicleInfo && (
-                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                         <div className="text-center">
+                          <CheckCircle className="w-6 h-6 text-green-600 mx-auto mb-2" />
                           <p className="font-semibold text-green-800">{vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
                           <p className="text-sm text-green-600">Trade-in: {vehicleInfo.tradeInValue}</p>
                         </div>
@@ -524,55 +525,17 @@ export default function EnhancedVehicleTradeInForm() {
                     )}
                   </div>
 
-                  {/* OR Divider */}
-                  <div className="flex items-center my-4">
-                    <div className="flex-1 border-t border-gray-300"></div>
-                    <span className="mx-3 text-gray-500 text-sm">OR</span>
-                    <div className="flex-1 border-t border-gray-300"></div>
-                  </div>
-
-                  {/* License Plate Alternative */}
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-purple-600">🚗 Scan License Plate</h3>
-                    <div className="relative">
+                  {/* Manual Entry Option */}
+                  <div className="space-y-3 pt-4 border-t">
+                    <h3 className="font-medium text-center text-gray-600">Manual Entry</h3>
+                    <div>
                       <Input
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        onChange={(e) => handleFileChange("licensePlate", e.target.files?.[0] || null)}
-                        className="hidden"
-                        id="licensePlate"
+                        placeholder="Enter 17-digit VIN manually"
+                        value={formData.vin}
+                        onChange={(e) => handleInputChange("vin", e.target.value.toUpperCase())}
+                        maxLength={17}
+                        className="text-center font-mono"
                       />
-                      <Label
-                        htmlFor="licensePlate"
-                        className="block cursor-pointer"
-                      >
-                        <div className="flex items-center justify-center w-full h-32 border-2 border-purple-400 rounded-xl bg-purple-50 hover:bg-purple-100 transition-all">
-                          <div className="text-center">
-                            {plateOcrProcessing ? (
-                              <>
-                                <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-2" />
-                                <span className="text-sm font-medium">Scanning Plate...</span>
-                              </>
-                            ) : formData.licensePlate ? (
-                              <>
-                                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                                <span className="text-sm font-medium text-green-600">Plate Captured</span>
-                                {plateOcrResult && (
-                                  <div className="mt-1 text-xs font-mono bg-white p-1 rounded">
-                                    {plateOcrResult}
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <FileText className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                                <span className="text-sm font-medium">Tap to Scan Plate</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </Label>
                     </div>
                   </div>
                 </CardContent>

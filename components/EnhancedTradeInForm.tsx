@@ -457,97 +457,114 @@ export default function EnhancedVehicleTradeInForm() {
                 <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                   <CardTitle className="flex items-center">
                     <Target className="w-5 h-5 mr-2" />
-                    🎯 Scan Vehicle ID
-                    <Badge className="ml-2 bg-white text-blue-600">
-                      Start Here
-                    </Badge>
+                    Scan Vehicle ID
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 space-y-6">
-                  <div className="text-center text-muted-foreground mb-6">
-                    <p className="text-lg font-medium">📱 Quick Start Guide</p>
-                    <p className="text-sm">Scan your VIN plate (preferred) or license plate to auto-populate vehicle info</p>
-                    <div className="mt-2 text-xs bg-blue-50 p-2 rounded">
-                      💡 <strong>Tip:</strong> VIN scanning provides more accurate vehicle details and trade-in values
+                <CardContent className="p-4 space-y-4">
+                  {/* VIN Scanning - Top Priority */}
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-blue-600">🔍 Scan VIN (Preferred)</h3>
+                    <div className="relative">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={(e) => handleFileChange("vinPhoto", e.target.files?.[0] || null)}
+                        className="hidden"
+                        id="vinPhoto"
+                      />
+                      <Label
+                        htmlFor="vinPhoto"
+                        className="block cursor-pointer"
+                      >
+                        <div className="flex items-center justify-center w-full h-32 border-2 border-blue-400 rounded-xl bg-blue-50 hover:bg-blue-100 transition-all">
+                          <div className="text-center">
+                            {vinOcrProcessing ? (
+                              <>
+                                <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
+                                <span className="text-sm font-medium">Scanning VIN...</span>
+                              </>
+                            ) : formData.vinPhoto ? (
+                              <>
+                                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                                <span className="text-sm font-medium text-green-600">VIN Captured</span>
+                                {vinOcrResult && (
+                                  <div className="mt-1 text-xs font-mono bg-white p-1 rounded">
+                                    {vinOcrResult}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <Target className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                                <span className="text-sm font-medium">Tap to Scan VIN</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </Label>
                     </div>
-                  </div>
-
-                  {/* VIN Scanning Section */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-center text-blue-600 text-lg">🔍 Preferred: Scan VIN</h3>
-                    <PhotoUploadField
-                      field="vinPhoto"
-                      label="📋 VIN Plate Photo"
-                      description="Point camera at VIN plate"
-                      processing={vinOcrProcessing}
-                      result={vinOcrResult}
-                      icon={Target}
-                      useGuidance={true}
-                    />
                     
                     {/* Show VIN result if available */}
-                    {vinOcrResult && (
-                      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                    {vinOcrResult && vehicleInfo && (
+                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                         <div className="text-center">
-                          <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                          <p className="font-semibold text-green-800">✅ VIN Scanned Successfully!</p>
-                          <p className="font-mono text-sm bg-white p-2 rounded border mt-2">{vinOcrResult}</p>
-                          {vehicleInfo && (
-                            <div className="mt-3 text-sm">
-                              <p className="font-medium">{vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
-                              <p className="text-green-600">Trade-in Value: {vehicleInfo.tradeInValue}</p>
-                            </div>
-                          )}
+                          <p className="font-semibold text-green-800">{vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
+                          <p className="text-sm text-green-600">Trade-in: {vehicleInfo.tradeInValue}</p>
                         </div>
                       </div>
                     )}
                   </div>
 
                   {/* OR Divider */}
-                  <div className="flex items-center my-6">
+                  <div className="flex items-center my-4">
                     <div className="flex-1 border-t border-gray-300"></div>
-                    <span className="mx-4 text-gray-500 font-medium">OR</span>
+                    <span className="mx-3 text-gray-500 text-sm">OR</span>
                     <div className="flex-1 border-t border-gray-300"></div>
                   </div>
 
                   {/* License Plate Alternative */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-center text-purple-600 text-lg">🚗 Alternative: Scan License Plate</h3>
-                    <PhotoUploadField
-                      field="licensePlate"
-                      label="🚙 License Plate Photo"
-                      description="Point camera at license plate"
-                      processing={plateOcrProcessing}
-                      result={plateOcrResult}
-                      icon={FileText}
-                      useGuidance={true}
-                    />
-                    
-                    {/* Show license plate result if available */}
-                    {plateOcrResult && (
-                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                        <div className="text-center">
-                          <CheckCircle className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                          <p className="font-semibold text-blue-800">✅ License Plate Scanned!</p>
-                          <p className="font-mono text-sm bg-white p-2 rounded border mt-2">{plateOcrResult}</p>
-                          <p className="text-xs text-blue-600 mt-2">Continue to next step to complete vehicle info</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Manual Entry Option */}
-                  <div className="space-y-4 pt-4 border-t">
-                    <h3 className="font-semibold text-center text-gray-600">✏️ Manual Entry (if scanning fails)</h3>
-                    <div>
-                      <Label className="text-center block mb-2">🔍 VIN Number</Label>
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-purple-600">🚗 Scan License Plate</h3>
+                    <div className="relative">
                       <Input
-                        placeholder="Enter 17-digit VIN manually"
-                        value={formData.vin}
-                        onChange={(e) => handleInputChange("vin", e.target.value.toUpperCase())}
-                        maxLength={17}
-                        className="text-center font-mono"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={(e) => handleFileChange("licensePlate", e.target.files?.[0] || null)}
+                        className="hidden"
+                        id="licensePlate"
                       />
+                      <Label
+                        htmlFor="licensePlate"
+                        className="block cursor-pointer"
+                      >
+                        <div className="flex items-center justify-center w-full h-32 border-2 border-purple-400 rounded-xl bg-purple-50 hover:bg-purple-100 transition-all">
+                          <div className="text-center">
+                            {plateOcrProcessing ? (
+                              <>
+                                <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-2" />
+                                <span className="text-sm font-medium">Scanning Plate...</span>
+                              </>
+                            ) : formData.licensePlate ? (
+                              <>
+                                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                                <span className="text-sm font-medium text-green-600">Plate Captured</span>
+                                {plateOcrResult && (
+                                  <div className="mt-1 text-xs font-mono bg-white p-1 rounded">
+                                    {plateOcrResult}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <FileText className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                                <span className="text-sm font-medium">Tap to Scan Plate</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </Label>
                     </div>
                   </div>
                 </CardContent>

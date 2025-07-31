@@ -376,15 +376,20 @@ export default function EnhancedVehicleTradeInForm() {
   }
 
   const MobileStepIndicator = () => (
-    <div className="flex justify-between items-center mb-6">
+    <div className="flex justify-between items-center mb-4 px-2">
       {steps.map((step, index) => (
-        <div key={index} className="flex flex-col items-center">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-            index <= currentStep ? 'bg-primary text-primary-foreground' : 'bg-muted'
+        <div key={index} className="flex flex-col items-center relative">
+          {index < steps.length - 1 && (
+            <div className={`absolute top-5 left-8 w-16 h-0.5 ${
+              index < currentStep ? 'bg-primary' : 'bg-muted'
+            }`} />
+          )}
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
+            index <= currentStep ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
           }`}>
-            <step.icon className="w-5 h-5" />
+            {index + 1}
           </div>
-          <span className={`text-xs mt-1 ${index <= currentStep ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+          <span className={`text-xs mt-1 text-center ${index <= currentStep ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
             {step.title}
           </span>
         </div>

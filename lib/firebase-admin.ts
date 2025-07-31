@@ -65,27 +65,8 @@ export const adminOperations = {
       return users;
     } catch (error) {
       console.error('Error fetching users:', error);
-      // Return mock data if Firestore fails (for development/testing)
-      return [
-        {
-          uid: 'mock-user-1',
-          email: 'admin@priority-appraisal.com',
-          role: 'admin',
-          createdAt: new Date().toISOString()
-        },
-        {
-          uid: 'mock-user-2', 
-          email: 'test-admin@priority-appraisal.com',
-          role: 'admin',
-          createdAt: new Date().toISOString()
-        },
-        {
-          uid: 'mock-user-3',
-          email: 'manager@priority-appraisal.com', 
-          role: 'manager',
-          createdAt: new Date().toISOString()
-        }
-      ] as AppUser[];
+      // Return empty array if Firestore fails - admin should add users manually
+      return [];
     }
   },
 

@@ -75,6 +75,22 @@ export default function EnhancedVehicleTradeInForm() {
     { title: "Review", icon: CheckCircle, description: "Review & Submit" }
   ]
 
+  // Calculate completion percentage
+  const getCompletionPercentage = () => {
+    const totalFields = 7 // vinPhoto, licensePlate, odometer, exterior1, exterior2, interior1, interior2
+    const completedFields = [
+      formData.vinPhoto,
+      formData.licensePlate, 
+      formData.odometer,
+      formData.exterior1,
+      formData.exterior2,
+      formData.interior1,
+      formData.interior2
+    ].filter(Boolean).length
+    
+    return Math.round((completedFields / totalFields) * 100)
+  }
+
   // Step validation logic
   const canProceedToNextStep = () => {
     switch (currentStep) {

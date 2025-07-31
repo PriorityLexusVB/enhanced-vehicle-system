@@ -71,7 +71,8 @@ export default function EnhancedVehicleTradeInForm() {
   const steps = [
     { title: "Scan", icon: Target, description: "Scan VIN or License Plate" },
     { title: "Vehicle", icon: Car, description: "Vehicle Info & Odometer" },
-    { title: "Photos", icon: Camera, description: "Vehicle Photos" }
+    { title: "Photos", icon: Camera, description: "Vehicle Photos" },
+    { title: "Review", icon: CheckCircle, description: "Review & Submit" }
   ]
 
   const handleInputChange = (field: string, value: string) => {

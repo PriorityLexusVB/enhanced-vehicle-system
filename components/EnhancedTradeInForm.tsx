@@ -648,7 +648,10 @@ export default function EnhancedVehicleTradeInForm() {
                 </CardHeader>
                 <CardContent className="p-4 space-y-6">
                   <div className="text-center text-muted-foreground mb-4">
-                    <p className="text-sm">📷 Take photos of the vehicle condition</p>
+                    <p className="text-sm">📷 Take clear photos of your vehicle from all angles</p>
+                    <div className="mt-2 text-xs bg-purple-50 p-2 rounded">
+                      💡 <strong>Photo Tips:</strong> Good lighting, clean lens, steady hands for best results
+                    </div>
                   </div>
 
                   {/* Vehicle Photos Grid */}

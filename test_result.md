@@ -559,19 +559,20 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Complete End-to-End Integration Flow Testing with Working Credentials"
-    - "PhotoGuidance System UI verification (now unblocked)"
-    - "Manager Dashboard AI Analysis Integration Testing"
-    - "Enhanced OCR Error Handling Verification - COMPLETED ✅"
-  stuck_tasks: []
+    - "Admin Users Management API - CRITICAL: Users created but not visible in admin panel"
+    - "Firestore user document creation/retrieval issue"
+    - "Firebase Admin SDK vs Client SDK configuration"
+  stuck_tasks:
+    - "Admin Users Management API"
   test_all: false
-  test_priority: "integration_testing_ready"
+  test_priority: "admin_functionality_critical"
   frontend_status: "READY_FOR_INTEGRATION_TESTING"
   gemini_ai_status: "WORKING_PERFECTLY"
   photoguidance_status: "IMPLEMENTED_AND_READY_FOR_TESTING"
   integration_status: "AUTHENTICATION_RESOLVED_READY_FOR_COMPLETE_TESTING"
   firebase_auth_status: "WORKING_WITH_NEW_CREDENTIALS"
   enhanced_ocr_error_handling_status: "COMPLETED_WORKING_EXCELLENTLY"
+  admin_functionality_status: "CRITICAL_ISSUE_USER_VISIBILITY"
 
 agent_communication:
   - agent: "testing"

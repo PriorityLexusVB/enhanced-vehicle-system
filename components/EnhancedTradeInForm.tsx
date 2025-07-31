@@ -824,7 +824,6 @@ export default function EnhancedVehicleTradeInForm() {
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
                 className="flex-1"
-                disabled={currentStep === 0 && (!formData.vinPhoto && !formData.licensePlate)}
               >
                 Next →
               </Button>

@@ -734,8 +734,8 @@ export default function EnhancedVehicleTradeInForm() {
               </Card>
             )}
 
-            {/* Step 2: Review */}
-            {currentStep === 2 && (
+            {/* Step 3: Review & Submit */}
+            {currentStep === 3 && (
               <Card className="shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
                   <CardTitle className="flex items-center">

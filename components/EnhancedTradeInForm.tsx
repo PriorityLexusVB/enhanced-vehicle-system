@@ -101,11 +101,11 @@ export default function EnhancedVehicleTradeInForm() {
     return Math.round((completedFields / totalFields) * 100)
   }
 
-  // Step validation logic
+  // Step validation logic - simplified for VIN-only workflow
   const canProceedToNextStep = () => {
     switch (currentStep) {
-      case 0: // Scan step
-        return formData.vin || vinOcrResult || plateOcrResult
+      case 0: // VIN scan step
+        return formData.vin || vinOcrResult
       case 1: // Vehicle info & odometer
         return formData.vin && (formData.mileage || ocrResult)
       case 2: // Photos

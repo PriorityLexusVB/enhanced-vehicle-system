@@ -173,10 +173,12 @@ class FocusedBackendTester:
         )
         
         if success and isinstance(response, dict):
-            analysis = response.get('analysis', {})
+            # Check for nested analysis structure
+            analysis = response.get('data', {}).get('analysis', {}) or response.get('analysis', {})
             if analysis and 'overall_condition' in analysis:
-                print(f"   ✅ Gemini AI working - Condition: {analysis.get('overall_condition')}")
+                print(f"   ✅ Gemini AI working - Condition: {analysis.get('overall_condition')[:50]}...")
                 print(f"   ✅ Vehicle Grade: {analysis.get('vehicle_grade', 'N/A')}")
+                print(f"   ✅ Confidence Score: {analysis.get('confidence_score', 'N/A')}%")
                 return True
             else:
                 self.critical_issues.append("Gemini AI analysis missing required data")

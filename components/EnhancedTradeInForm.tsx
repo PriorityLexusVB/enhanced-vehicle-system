@@ -592,7 +592,10 @@ export default function EnhancedVehicleTradeInForm() {
 
                   {/* Odometer Section */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-center text-blue-600 text-lg">📊 Scan Odometer</h3>
+                    <div className="text-center mb-4">
+                      <h3 className="font-semibold text-blue-600 text-lg">📊 Scan Odometer</h3>
+                      <p className="text-sm text-muted-foreground">Point camera directly at odometer display for best results</p>
+                    </div>
                     <PhotoUploadField
                       field="odometer"
                       label="📈 Odometer Reading"

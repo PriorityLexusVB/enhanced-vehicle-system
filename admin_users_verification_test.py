@@ -24,11 +24,13 @@ def generate_test_email():
 def test_admin_users_api():
     """Test the GET /api/admin/users endpoint"""
     print("🔍 Testing Admin Users API...")
+    print(f"Making request to: {API_BASE}/admin/users")
     
     try:
         response = requests.get(f"{API_BASE}/admin/users", timeout=10)
         print(f"Status Code: {response.status_code}")
         print(f"Response Headers: {dict(response.headers)}")
+        print(f"Raw Response Text: {response.text}")
         
         if response.status_code == 200:
             data = response.json()

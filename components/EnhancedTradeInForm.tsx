@@ -693,12 +693,25 @@ export default function EnhancedVehicleTradeInForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
+                  {/* Email Input */}
+                  <div className="space-y-2">
+                    <Label>📧 Your Email Address</Label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email for updates"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      required
+                      className="text-center"
+                    />
+                  </div>
+
                   {vehicleInfo && (
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h3 className="font-medium">🚗 Vehicle Information</h3>
                       <p><strong>Vehicle:</strong> {vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
                       <p><strong>VIN:</strong> {formData.vin}</p>
-                      <p><strong>Mileage:</strong> {formData.mileage} miles</p>
+                      <p><strong>Mileage:</strong> {formData.mileage || ocrResult} miles</p>
                       <p><strong>Trade-in Value:</strong> <span className="text-green-600 font-semibold">{vehicleInfo.tradeInValue}</span></p>
                     </div>
                   )}
@@ -727,6 +740,14 @@ export default function EnhancedVehicleTradeInForm() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Notes Display */}
+                  {formData.notes && (
+                    <div className="bg-yellow-50 p-3 rounded-lg">
+                      <h4 className="font-medium text-yellow-800 mb-1">📝 Your Notes</h4>
+                      <p className="text-sm text-yellow-700">{formData.notes}</p>
+                    </div>
+                  )}
 
                   <div className="bg-green-50 p-3 rounded-lg text-center">
                     <span className="text-green-700 text-sm">

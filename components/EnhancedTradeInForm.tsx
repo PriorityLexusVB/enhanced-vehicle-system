@@ -819,12 +819,12 @@ export default function EnhancedVehicleTradeInForm() {
               </Button>
             )}
             
-            {currentStep < 2 ? (
+            {currentStep < 3 ? (
               <Button
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
                 className="flex-1"
-                disabled={currentStep === 0 && (!formData.vin || !formData.year || !formData.make)}
+                disabled={currentStep === 0 && (!formData.vinPhoto && !formData.licensePlate)}
               >
                 Next →
               </Button>

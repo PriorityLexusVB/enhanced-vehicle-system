@@ -673,11 +673,11 @@ export default function EnhancedVehicleTradeInForm() {
                     </div>
                   </div>
 
-                  {/* Vehicle Photos Grid */}
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Vehicle Photos Grid - Stacked Vertically */}
+                  <div className="space-y-4">
                     <PhotoUploadField
                       field="exterior1"
-                      label="🚗 Front/Side"
+                      label="🚗 Front/Side View"
                       description="Front and driver side view"
                       processing={false}
                       result=""

@@ -74,9 +74,16 @@ export default function EnhancedVehicleTradeInForm() {
   const steps = [
     { title: "Scan", icon: Target, description: "Scan VIN or License Plate" },
     { title: "Vehicle", icon: Car, description: "Vehicle Info & Odometer" },
-    { title: "Photos", icon: Camera, description: "Vehicle Photos" },
-    { title: "Review", icon: CheckCircle, description: "Review & Submit" }
+    { title: "Photos", icon: Camera, description: "Vehicle Photos" }
   ]
+
+  // Get authenticated user on mount
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+    })
+    return () => unsubscribe()
+  }, [])
 
   // Calculate completion percentage
   const getCompletionPercentage = () => {

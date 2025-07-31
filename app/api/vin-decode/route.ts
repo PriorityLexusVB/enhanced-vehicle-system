@@ -98,6 +98,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 🗄️ CACHE CHECK - Try cache first (safe with fallback)
+    const cachedResult = getCachedVin(cleanVin);
+    if (cachedResult) {
+      console.log(`🚀 VIN ${cleanVin} served from cache`);
+      return NextResponse.json({
+        success: true,
+        vehicle: {
+          ...cachedResult,
+          cached: true,
+          cacheHit: true
+        }
+      });
+    }
+
+    console.log(`🔍 VIN ${cleanVin} not in cache, calling NHTSA API`);
+
     // For demo purposes, we'll use the free NHTSA API
     // In production, you might want to use a more comprehensive service
     const nhtsa_url = `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleanVin}?format=json`;

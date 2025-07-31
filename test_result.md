@@ -486,12 +486,15 @@ backend:
     working: false
     file: "app/api/admin/users/route.ts"
     stuck_count: 1
-    priority: "medium"
+    priority: "critical"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ Firebase admin operations failing. GET /api/admin/users returns 500 error. Input validation works but actual user operations fail due to Firebase admin SDK configuration issues."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL BUG IDENTIFIED AND PARTIALLY FIXED: Admin panel showing no users despite Firestore having data. ROOT CAUSE ANALYSIS: 1) ✅ FIXED: Server-side rendering check in firebase-admin.ts was returning empty array for API calls (typeof window === 'undefined'). 2) ❌ CURRENT ISSUE: Firestore security rules blocking server-side access with 'Missing or insufficient permissions' error. API endpoint accessible (200 OK) but returns empty users array due to permission-denied from Firestore. IMMEDIATE FIX NEEDED: Update Firestore security rules to allow server-side reads or implement Firebase Admin SDK. The users exist in Firestore but security rules prevent the API from accessing them."
 
   - task: "Admin Add User API"
     implemented: true

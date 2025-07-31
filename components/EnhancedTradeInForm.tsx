@@ -478,10 +478,11 @@ export default function EnhancedVehicleTradeInForm() {
                     <PhotoUploadField
                       field="vinPhoto"
                       label="📋 VIN Plate Photo"
-                      description="📸 Scan VIN plate → Auto-extract VIN → Auto-decode vehicle"
+                      description="Point camera at VIN plate"
                       processing={vinOcrProcessing}
                       result={vinOcrResult}
                       icon={Target}
+                      useGuidance={true}
                     />
                     
                     {/* Show VIN result if available */}

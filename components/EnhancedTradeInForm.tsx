@@ -400,13 +400,13 @@ export default function EnhancedVehicleTradeInForm() {
   if (isMobile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="sticky top-0 bg-white/95 backdrop-blur border-b p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              🚀 Enhanced Trade-In v6.0
+        <div className="sticky top-0 bg-white/95 backdrop-blur border-b p-3">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              🚀 Trade-In v6.0
             </h1>
-            <Badge variant="default" className="bg-green-100 text-green-800">
-              ✨ Smart OCR Active
+            <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
+              ✨ Smart OCR
             </Badge>
           </div>
           <MobileStepIndicator />

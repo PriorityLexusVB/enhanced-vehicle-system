@@ -60,68 +60,55 @@ export default function MainNavigation() {
   const canAccessAdmin = isAdminUser(userRole)
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo/Brand */}
+    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-12">
+          {/* Logo/Brand - Simplified */}
           <div className="flex items-center">
-            <Car className="w-8 h-8 text-primary mr-3" />
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Vehicle Appraisal System
-            </span>
+            <Button
+              variant="ghost"
+              onClick={() => navigateToRoute('/')}
+              className="text-lg font-bold text-primary p-0"
+            >
+              Priority Appraisal
+            </Button>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Simplified */}
           <div className="hidden md:flex items-center space-x-4">
             {canAccessSubmit && (
               <Button
                 variant={pathname === '/submit' ? 'default' : 'ghost'}
+                size="sm"
                 onClick={() => navigateToRoute('/submit')}
-                className="flex items-center"
               >
-                <Car className="w-4 h-4 mr-2" />
-                Trade-In Form
+                Submit
               </Button>
             )}
 
             {canAccessManagerDashboard && (
               <Button
                 variant={pathname === '/manager-dashboard' ? 'default' : 'ghost'}
+                size="sm"
                 onClick={() => navigateToRoute('/manager-dashboard')}
-                className="flex items-center"
               >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Manager Dashboard
+                Dashboard
               </Button>
             )}
 
             {canAccessAdmin && (
               <Button
                 variant={pathname === '/admin' ? 'default' : 'ghost'}
+                size="sm"
                 onClick={() => navigateToRoute('/admin')}
-                className="flex items-center"
               >
-                <Users className="w-4 h-4 mr-2" />
-                Admin Panel
+                Admin
               </Button>
             )}
 
-            {/* User Info */}
-            <div className="flex items-center space-x-3 ml-6 pl-6 border-l">
-              <div className="text-right hidden sm:block">
-                <div className="text-sm font-medium">{user.email}</div>
-                <Badge 
-                  variant={userRole?.role === 'admin' ? 'destructive' : userRole?.role === 'manager' ? 'default' : 'secondary'}
-                  className="text-xs"
-                >
-                  {userRole?.role?.toUpperCase()}
-                </Badge>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -131,23 +118,22 @@ export default function MainNavigation() {
               size="sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Navigation Menu - Simplified */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-white dark:bg-gray-900 py-4">
-            <div className="space-y-2">
+          <div className="md:hidden border-t bg-white dark:bg-gray-900 py-2">
+            <div className="space-y-1">
               {canAccessSubmit && (
                 <Button
                   variant={pathname === '/submit' ? 'default' : 'ghost'}
                   onClick={() => navigateToRoute('/submit')}
-                  className="w-full justify-start"
+                  className="w-full justify-start h-10"
                 >
-                  <Car className="w-4 h-4 mr-2" />
-                  Trade-In Form
+                  Submit Trade-In
                 </Button>
               )}
 
@@ -155,9 +141,8 @@ export default function MainNavigation() {
                 <Button
                   variant={pathname === '/manager-dashboard' ? 'default' : 'ghost'}
                   onClick={() => navigateToRoute('/manager-dashboard')}
-                  className="w-full justify-start"
+                  className="w-full justify-start h-10"
                 >
-                  <BarChart3 className="w-4 h-4 mr-2" />
                   Manager Dashboard
                 </Button>
               )}
@@ -166,24 +151,18 @@ export default function MainNavigation() {
                 <Button
                   variant={pathname === '/admin' ? 'default' : 'ghost'}
                   onClick={() => navigateToRoute('/admin')}
-                  className="w-full justify-start"
+                  className="w-full justify-start h-10"
                 >
-                  <Users className="w-4 h-4 mr-2" />
                   Admin Panel
                 </Button>
               )}
 
-              <div className="pt-4 border-t">
-                <div className="px-4 py-2">
-                  <div className="text-sm font-medium">{user.email}</div>
-                  <Badge 
-                    variant={userRole?.role === 'admin' ? 'destructive' : userRole?.role === 'manager' ? 'default' : 'secondary'}
-                    className="text-xs mt-1"
-                  >
-                    {userRole?.role?.toUpperCase()}
-                  </Badge>
-                </div>
-                <Button variant="outline" onClick={handleLogout} className="w-full mt-2">
+              <div className="pt-2 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={handleLogout}
+                  className="w-full justify-start h-10"
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </Button>

@@ -800,13 +800,18 @@ export default function EnhancedVehicleTradeInForm() {
               <Button
                 type="submit"
                 onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                disabled={isSubmitting || !userEmail.trim()}
+                className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Submitting...
+                  </>
+                ) : !userEmail.trim() ? (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Enter Email to Submit
                   </>
                 ) : (
                   <>

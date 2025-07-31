@@ -14,8 +14,11 @@ import { Progress } from "@/components/ui/progress"
 import { Camera, Upload, Car, CheckCircle, Loader2, Zap, Target, FileText, Eye } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import PhotoGuidance from "@/components/PhotoGuidance"
+import { auth } from '../lib/firebaseconfig'
+import { onAuthStateChanged, User } from 'firebase/auth'
 
 export default function EnhancedVehicleTradeInForm() {
+  const [user, setUser] = useState<User | null>(null)
   const [formData, setFormData] = useState({
     year: "",
     make: "",

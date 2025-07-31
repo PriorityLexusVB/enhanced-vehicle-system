@@ -69,9 +69,10 @@ export default function EnhancedVehicleTradeInForm() {
   }, [])
 
   const steps = [
-    { title: "Vehicle Info", icon: Car },
-    { title: "Photos", icon: Camera },
-    { title: "Review", icon: CheckCircle }
+    { title: "Photos", icon: Camera, description: "Take vehicle photos" },
+    { title: "Scan", icon: Target, description: "Auto-scan details" },
+    { title: "Details", icon: Car, description: "Vehicle info" },
+    { title: "Submit", icon: CheckCircle, description: "Complete" }
   ]
 
   const handleInputChange = (field: string, value: string) => {

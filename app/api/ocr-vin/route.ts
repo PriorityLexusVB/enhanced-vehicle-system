@@ -52,28 +52,35 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // VIN pattern: 17 characters, alphanumeric (excluding I, O, Q)
+    // Enhanced VIN extraction - focus on 17 consecutive alphanumeric characters
+    console.log('Detected text:', fullText)
+    
+    // Remove all spaces, punctuation, and newlines to get continuous text
+    const cleanText = fullText.replace(/[^A-HJ-NPR-Z0-9]/gi, '').toUpperCase()
+    
+    // VIN pattern: exactly 17 characters, alphanumeric (excluding I, O, Q)
     const vinPattern = /[A-HJ-NPR-Z0-9]{17}/g
-    const vinMatches = fullText.replace(/\s/g, '').match(vinPattern)
+    const vinMatches = cleanText.match(vinPattern)
     
     let extractedVin = 'UNREADABLE'
     let confidence = 0
 
     if (vinMatches && vinMatches.length > 0) {
       // Take the first valid VIN match
-      extractedVin = vinMatches[0].toUpperCase()
+      extractedVin = vinMatches[0]
       confidence = 95 // High confidence for pattern match
       
-      console.log('Extracted VIN:', extractedVin)
+      console.log('Extracted VIN from pattern:', extractedVin)
     } else {
-      // Try to find 17-character sequences that might be VINs
-      const sequences = fullText.replace(/\s/g, '').match(/.{17}/g) || []
-      
-      for (const seq of sequences) {
-        // Check if it contains typical VIN characters
-        if (/^[A-HJ-NPR-Z0-9]{17}$/.test(seq.toUpperCase())) {
-          extractedVin = seq.toUpperCase()
-          confidence = 75 // Medium confidence
+      // Try sliding window approach for 17-character sequences
+      for (let i = 0; i <= cleanText.length - 17; i++) {
+        const candidate = cleanText.substring(i, i + 17)
+        
+        // Validate VIN format (no I, O, Q allowed)
+        if (/^[A-HJ-NPR-Z0-9]{17}$/.test(candidate)) {
+          extractedVin = candidate
+          confidence = 85 // Good confidence
+          console.log('Extracted VIN from sliding window:', extractedVin)
           break
         }
       }

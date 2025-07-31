@@ -483,7 +483,7 @@ backend:
 
   - task: "Admin Users Management API"
     implemented: true
-    working: false
+    working: true
     file: "app/api/admin/users/route.ts"
     stuck_count: 1
     priority: "critical"

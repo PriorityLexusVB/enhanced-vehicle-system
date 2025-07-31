@@ -52,35 +52,96 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // License plate patterns (US format variations)
+    // Enhanced license plate extraction - ignore stickers, state names, etc.
+    console.log('Detected license plate text:', fullText)
+    
+    // Split into lines and filter out common non-plate text
+    const lines = fullText.split('\n').map(line => line.trim().toUpperCase())
+    
+    // Words to ignore (registration stickers, state names, slogans)
+    const ignoreWords = [
+      'MONTH', 'YEAR', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', 'EXPIRES', 'EXPIRE',
+      'CALIFORNIA', 'TEXAS', 'FLORIDA', 'NEW YORK', 'ILLINOIS', 'PENNSYLVANIA',
+      'OHIO', 'GEORGIA', 'NORTH CAROLINA', 'MICHIGAN', 'NEW JERSEY', 'VIRGINIA',
+      'WASHINGTON', 'ARIZONA', 'MASSACHUSETTS', 'TENNESSEE', 'INDIANA', 'MISSOURI',
+      'MARYLAND', 'WISCONSIN', 'COLORADO', 'MINNESOTA', 'SOUTH CAROLINA', 'ALABAMA',
+      'LOUISIANA', 'KENTUCKY', 'OREGON', 'OKLAHOMA', 'CONNECTICUT', 'UTAH', 'IOWA',
+      'NEVADA', 'ARKANSAS', 'MISSISSIPPI', 'KANSAS', 'NEW MEXICO', 'NEBRASKA',
+      'WEST VIRGINIA', 'IDAHO', 'HAWAII', 'NEW HAMPSHIRE', 'MAINE', 'MONTANA',
+      'RHODE ISLAND', 'DELAWARE', 'SOUTH DAKOTA', 'NORTH DAKOTA', 'ALASKA',
+      'VERMONT', 'WYOMING', 'CA', 'TX', 'FL', 'NY', 'IL', 'PA', 'OH', 'GA', 'NC',
+      'MI', 'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI', 'CO',
+      'MN', 'SC', 'AL', 'LA', 'KY', 'OR', 'OK', 'CT', 'UT', 'IA', 'NV', 'AR',
+      'MS', 'KS', 'NM', 'NE', 'WV', 'ID', 'HI', 'NH', 'ME', 'MT', 'RI', 'DE',
+      'SD', 'ND', 'AK', 'VT', 'WY', 'REGISTRATION', 'RENEWAL', 'STICKER',
+      'GOLDEN STATE', 'LONE STAR', 'SUNSHINE', 'EMPIRE STATE', 'LAND OF LINCOLN'
+    ]
+    
+    // Filter lines to find potential plate numbers
+    const candidateLines = lines.filter(line => {
+      // Skip empty lines
+      if (!line || line.length < 3) return false
+      
+      // Skip lines that are just years or months
+      if (/^(19|20)\d{2}$/.test(line)) return false
+      if (/^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)$/.test(line)) return false
+      
+      // Skip lines containing ignore words
+      if (ignoreWords.some(word => line.includes(word))) return false
+      
+      // Must contain both letters and numbers (typical plate format)
+      if (!/[A-Z]/.test(line) || !/[0-9]/.test(line)) {
+        // Exception: some plates are all numbers or all letters
+        if (line.length >= 4 && line.length <= 8) return true
+        return false
+      }
+      
+      return true
+    })
+    
+    console.log('Candidate plate lines:', candidateLines)
+    
+    // License plate patterns (enhanced)
     const platePatterns = [
-      /[A-Z0-9]{2,3}[\s-]?[A-Z0-9]{3,4}/g, // ABC-1234, AB-1234, etc.
-      /[A-Z]{1,3}[\s-]?[0-9]{1,4}[\s-]?[A-Z]{0,2}/g, // A-123-B, etc.
-      /[0-9]{1,3}[\s-]?[A-Z]{2,3}[\s-]?[0-9]{1,3}/g, // 123-ABC-45, etc.
+      /^[A-Z0-9]{2,3}[A-Z0-9]{3,4}$/, // ABC1234, AB1234, etc. (no spaces/dashes)
+      /^[A-Z]{1,3}[0-9]{1,4}[A-Z]{0,2}$/, // A123B, ABC123, etc.
+      /^[0-9]{1,3}[A-Z]{2,3}[0-9]{1,3}$/, // 123ABC45, etc.
+      /^[A-Z0-9]{4,8}$/ // Any 4-8 character alphanumeric
     ]
     
     let extractedPlate = 'UNREADABLE'
     let confidence = 0
 
-    // Clean text: remove spaces, special chars except letters/numbers
-    const cleanText = fullText.replace(/[^A-Z0-9\s]/g, '').replace(/\s+/g, '')
-    
-    // Try different patterns
-    for (const pattern of platePatterns) {
-      const matches = cleanText.match(pattern)
-      if (matches && matches.length > 0) {
-        extractedPlate = matches[0].replace(/[\s-]/g, '').toUpperCase()
-        confidence = 85
-        break
+    // Try to match patterns in candidate lines
+    for (const line of candidateLines) {
+      const cleanLine = line.replace(/[^A-Z0-9]/g, '') // Remove spaces, dashes
+      
+      for (const pattern of platePatterns) {
+        if (pattern.test(cleanLine) && cleanLine.length >= 4 && cleanLine.length <= 8) {
+          extractedPlate = cleanLine
+          confidence = 90
+          console.log('Found plate match:', extractedPlate)
+          break
+        }
       }
+      
+      if (extractedPlate !== 'UNREADABLE') break
     }
 
-    // Fallback: look for any sequence of 5-8 alphanumeric characters
+    // Fallback: look for any sequence of 4-8 alphanumeric characters in full text
     if (extractedPlate === 'UNREADABLE') {
-      const sequences = cleanText.match(/[A-Z0-9]{5,8}/g) || []
-      if (sequences.length > 0) {
-        extractedPlate = sequences[0]
-        confidence = 60 // Lower confidence for fallback
+      const cleanText = fullText.replace(/[^A-Z0-9]/g, '').toUpperCase()
+      const sequences = cleanText.match(/[A-Z0-9]{4,8}/g) || []
+      
+      for (const seq of sequences) {
+        // Skip obvious non-plates (all same character, obvious years, etc.)
+        if (!/^(.)\1+$/.test(seq) && !/^(19|20)\d{2}/.test(seq)) {
+          extractedPlate = seq
+          confidence = 70 // Lower confidence for fallback
+          console.log('Fallback plate match:', extractedPlate)
+          break
+        }
       }
     }
 

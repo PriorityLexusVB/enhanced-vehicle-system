@@ -437,9 +437,14 @@ export default function EnhancedVehicleTradeInForm() {
             <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               🚀 Trade-In v6.0
             </h1>
-            <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
-              ✨ Smart OCR
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
+                ✨ Smart OCR
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                {getCompletionPercentage()}% Complete
+              </Badge>
+            </div>
           </div>
           <MobileStepIndicator />
         </div>

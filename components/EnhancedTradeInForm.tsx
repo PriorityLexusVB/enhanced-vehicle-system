@@ -516,10 +516,11 @@ export default function EnhancedVehicleTradeInForm() {
                     <PhotoUploadField
                       field="licensePlate"
                       label="🚙 License Plate Photo"
-                      description="📋 Alternative vehicle identification method"
+                      description="Point camera at license plate"
                       processing={plateOcrProcessing}
                       result={plateOcrResult}
                       icon={FileText}
+                      useGuidance={true}
                     />
                     
                     {/* Show license plate result if available */}

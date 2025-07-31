@@ -154,13 +154,19 @@ export async function POST(request: NextRequest) {
         marketTrend: getMarketTrend(vehicleInfo.make),
       };
 
+      const finalVehicleData = {
+        ...vehicleInfo,
+        ...estimatedValues,
+        decodedAt: new Date().toISOString(),
+        cached: false
+      };
+
+      // 🗄️ CACHE SAVE - Save to cache (non-blocking, safe)
+      setCachedVin(cleanVin, finalVehicleData);
+
       return NextResponse.json({
         success: true,
-        vehicle: {
-          ...vehicleInfo,
-          ...estimatedValues,
-          decodedAt: new Date().toISOString(),
-        }
+        vehicle: finalVehicleData
       });
 
     } catch (apiError) {

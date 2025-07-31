@@ -813,9 +813,14 @@ export default function EnhancedVehicleTradeInForm() {
               <Button
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
-                className="flex-1"
+                disabled={!canProceedToNextStep()}
+                className="flex-1 disabled:opacity-50"
               >
-                Next →
+                {!canProceedToNextStep() ? (
+                  currentStep === 0 ? "Scan VIN or License First" :
+                  currentStep === 1 ? "Complete Vehicle Info" :
+                  "Take Required Photos"
+                ) : "Next →"}
               </Button>
             ) : (
               <Button

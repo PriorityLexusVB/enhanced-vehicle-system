@@ -52,38 +52,90 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Enhanced VIN extraction - focus on 17 consecutive alphanumeric characters
-    console.log('Detected text:', fullText)
+    // ENHANCED VIN EXTRACTION - Advanced Pattern Recognition
+    console.log('Raw detected text:', fullText)
     
-    // Remove all spaces, punctuation, and newlines to get continuous text
-    const cleanText = fullText.replace(/[^A-HJ-NPR-Z0-9]/gi, '').toUpperCase()
+    // Step 1: Extract ALL possible alphanumeric sequences
+    const allSequences = fullText.match(/[A-HJ-NPR-Z0-9]+/gi) || []
+    console.log('All alphanumeric sequences found:', allSequences)
     
-    // VIN pattern: exactly 17 characters, alphanumeric (excluding I, O, Q)
-    const vinPattern = /[A-HJ-NPR-Z0-9]{17}/g
-    const vinMatches = cleanText.match(vinPattern)
+    // Step 2: Filter sequences that could be VINs (exactly 17 characters)
+    const candidateVINs = allSequences
+      .map(seq => seq.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, ''))
+      .filter(seq => seq.length === 17)
+      .filter(seq => /^[A-HJ-NPR-Z0-9]{17}$/.test(seq)) // No I, O, Q allowed
     
+    console.log('17-character VIN candidates:', candidateVINs)
+    
+    // Step 3: Advanced VIN validation using check digit algorithm
+    const validateVIN = (vin: string): boolean => {
+      if (vin.length !== 17) return false
+      
+      // VIN character values for check digit calculation
+      const values: { [key: string]: number } = {
+        '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
+        'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8,
+        'J': 1, 'K': 2, 'L': 3, 'M': 4, 'N': 5, 'P': 7, 'R': 9,
+        'S': 2, 'T': 3, 'U': 4, 'V': 5, 'W': 6, 'X': 7, 'Y': 8, 'Z': 9
+      }
+      
+      // Weight factors for each position
+      const weights = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2]
+      
+      let sum = 0
+      for (let i = 0; i < 17; i++) {
+        if (i === 8) continue // Skip check digit position
+        const char = vin[i]
+        if (values[char] === undefined) return false
+        sum += values[char] * weights[i]
+      }
+      
+      const checkDigit = sum % 11
+      const expectedCheckChar = checkDigit === 10 ? 'X' : checkDigit.toString()
+      
+      return vin[8] === expectedCheckChar
+    }
+    
+    // Step 4: Find valid VINs using check digit validation
     let extractedVin = 'UNREADABLE'
     let confidence = 0
-
-    if (vinMatches && vinMatches.length > 0) {
-      // Take the first valid VIN match
-      extractedVin = vinMatches[0]
-      confidence = 95 // High confidence for pattern match
+    
+    for (const candidate of candidateVINs) {
+      if (validateVIN(candidate)) {
+        extractedVin = candidate
+        confidence = 98 // Very high confidence for valid check digit
+        console.log('✅ Valid VIN found with check digit validation:', extractedVin)
+        break
+      }
+    }
+    
+    // Step 5: Fallback - if no valid check digit found, use pattern matching
+    if (extractedVin === 'UNREADABLE' && candidateVINs.length > 0) {
+      // Look for VINs with realistic manufacturer codes (1st character)
+      const validFirstChars = ['1', '2', '3', '4', '5', 'J', 'K', 'W', 'Y', 'Z'] // Common countries
       
-      console.log('Extracted VIN from pattern:', extractedVin)
-    } else {
-      // Try sliding window approach for 17-character sequences
-      for (let i = 0; i <= cleanText.length - 17; i++) {
-        const candidate = cleanText.substring(i, i + 17)
-        
-        // Validate VIN format (no I, O, Q allowed)
-        if (/^[A-HJ-NPR-Z0-9]{17}$/.test(candidate)) {
+      for (const candidate of candidateVINs) {
+        if (validFirstChars.includes(candidate[0])) {
           extractedVin = candidate
-          confidence = 85 // Good confidence
-          console.log('Extracted VIN from sliding window:', extractedVin)
+          confidence = 85 // Good confidence for pattern match
+          console.log('✅ VIN found with pattern matching:', extractedVin)
           break
         }
       }
+      
+      // Final fallback - take first 17-char sequence
+      if (extractedVin === 'UNREADABLE') {
+        extractedVin = candidateVINs[0]
+        confidence = 70
+        console.log('⚠️ VIN found with basic matching:', extractedVin)
+      }
+    }
+    
+    // Step 6: Final validation - ensure it's exactly 17 characters
+    if (extractedVin !== 'UNREADABLE' && extractedVin.length !== 17) {
+      console.log('❌ Invalid VIN length, marking as unreadable')
+      extractedVin = 'UNREADABLE'
+      confidence = 0
     }
 
     // Additional validation for VIN format

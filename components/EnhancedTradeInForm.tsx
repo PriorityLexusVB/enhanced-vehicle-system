@@ -208,7 +208,7 @@ export default function EnhancedVehicleTradeInForm() {
     const photoType = photoTypeMapping[field as keyof typeof photoTypeMapping]
     
     // Only show guidance for VIN, license plate, and odometer
-    const shouldShowGuidance = useGuidance && photoType && ['vin', 'license', 'odometer'].includes(photoType.guidance)
+    const shouldShowGuidance = useGuidance && photoType && ['vin', 'license-plate', 'odometer'].includes(photoType.guidance)
     
     return (
       <div className="space-y-2">

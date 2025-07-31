@@ -682,57 +682,6 @@ export default function EnhancedVehicleTradeInForm() {
                 </CardContent>
               </Card>
             )}
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
-                  <CardTitle className="flex items-center">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Review & Submit
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 space-y-4">
-                  {vehicleInfo && (
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h3 className="font-medium">🚗 Vehicle Information</h3>
-                      <p><strong>Vehicle:</strong> {vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
-                      <p><strong>VIN:</strong> {formData.vin}</p>
-                      <p><strong>Mileage:</strong> {formData.mileage} miles</p>
-                      <p><strong>Trade-in Value:</strong> <span className="text-green-600 font-semibold">{vehicleInfo.tradeInValue}</span></p>
-                    </div>
-                  )}
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">📸 Capture Summary</h3>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      {[
-                        { key: 'vinPhoto', label: 'VIN Plate' },
-                        { key: 'licensePlate', label: 'License Plate' },
-                        { key: 'odometer', label: 'Odometer' },
-                        { key: 'exterior1', label: 'Front/Side' },
-                        { key: 'exterior2', label: 'Rear' },
-                        { key: 'interior1', label: 'Dashboard' },
-                        { key: 'interior2', label: 'Interior' }
-                      ].map(({ key, label }) => (
-                        <div key={key} className="flex items-center">
-                          {formData[key as keyof typeof formData] ? 
-                            <CheckCircle className="w-4 h-4 text-green-600 mr-1" /> : 
-                            <div className="w-4 h-4 border border-gray-400 rounded mr-1" />
-                          }
-                          <span className={formData[key as keyof typeof formData] ? 'text-green-600' : 'text-gray-500'}>
-                            {label}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-green-50 p-3 rounded-lg text-center">
-                    <span className="text-green-700 text-sm">
-                      ✨ Smart OCR System Active • Ready for submission
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Step 3: Review & Submit */}
             {currentStep === 3 && (

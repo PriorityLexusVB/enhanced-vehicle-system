@@ -117,9 +117,10 @@ class AdminUsersCriticalTester:
         # Test a simple endpoint to see if the app is running
         success, response = self.run_test(
             "Basic API Health Check",
-            "GET",
+            "POST",
             "api/vin-decode",
-            400  # Should return 400 for missing VIN, not 500 for server error
+            400,  # Should return 400 for missing VIN, not 500 for server error
+            data={}
         )
         
         if success:

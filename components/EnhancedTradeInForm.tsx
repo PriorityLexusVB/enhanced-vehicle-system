@@ -783,7 +783,7 @@ export default function EnhancedVehicleTradeInForm() {
               </Button>
             )}
             
-            {currentStep < 3 ? (
+            {currentStep < 2 ? (
               <Button
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}

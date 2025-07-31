@@ -146,7 +146,7 @@ class AdminUsersCriticalTester:
             data={
                 "email": test_email,
                 "password": "TestPassword123!",
-                "role": "user"
+                "role": "sales"
             }
         )
         

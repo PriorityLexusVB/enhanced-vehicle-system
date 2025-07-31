@@ -1,5 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Simple in-memory cache for VIN lookups
+// In production, you might want to use Redis or a more sophisticated cache
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+  expiresAt: number;
+}
+
+const vinCache = new Map<string, CacheEntry>();
+
+// Cache configuration
+const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const MAX_CACHE_SIZE = 1000; // Prevent memory issues
+
+// Helper function to clean expired entries
+function cleanExpiredCache() {
+  const now = Date.now();
+  for (const [key, entry] of vinCache.entries()) {
+    if (entry.expiresAt < now) {
+      vinCache.delete(key);
+    }
+  }
+}
+
+// Helper function to get from cache
+function getCachedVin(vin: string): any | null {
+  try {
+    const entry = vinCache.get(vin);
+    if (!entry) return null;
+    
+    // Check if expired
+    if (entry.expiresAt < Date.now()) {
+      vinCache.delete(vin);
+      return null;
+    }
+    
+    return entry.data;
+  } catch (error) {
+    console.log('Cache read error:', error);
+    return null; // Graceful fallback
+  }
+}
+
+// Helper function to save to cache
+function setCachedVin(vin: string, data: any): void {
+  try {
+    // Clean cache if it's getting too large
+    if (vinCache.size >= MAX_CACHE_SIZE) {
+      cleanExpiredCache();
+      
+      // If still too large, remove oldest entries
+      if (vinCache.size >= MAX_CACHE_SIZE) {
+        const sortedEntries = Array.from(vinCache.entries())
+          .sort((a, b) => a[1].timestamp - b[1].timestamp);
+        
+        // Remove oldest 20% of entries
+        const toRemove = Math.floor(MAX_CACHE_SIZE * 0.2);
+        for (let i = 0; i < toRemove; i++) {
+          vinCache.delete(sortedEntries[i][0]);
+        }
+      }
+    }
+    
+    const now = Date.now();
+    vinCache.set(vin, {
+      data,
+      timestamp: now,
+      expiresAt: now + CACHE_TTL_MS
+    });
+    
+    console.log(`✅ VIN ${vin} cached successfully`);
+  } catch (error) {
+    console.log('Cache save error:', error);
+    // Non-blocking - if cache save fails, user still gets result
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { vin } = await request.json();

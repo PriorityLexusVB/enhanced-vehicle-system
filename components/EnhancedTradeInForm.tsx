@@ -429,61 +429,153 @@ export default function EnhancedVehicleTradeInForm() {
 
         <div className="p-4 pb-20">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Step 0: Photos First */}
+            {/* Step 0: Scan VIN or License Plate */}
             {currentStep === 0 && (
               <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+                <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                   <CardTitle className="flex items-center">
-                    <Camera className="w-5 h-5 mr-2" />
-                    📸 Take Vehicle Photos
-                    <Badge className="ml-2 bg-white text-green-600">
+                    <Target className="w-5 h-5 mr-2" />
+                    🎯 Scan Vehicle ID
+                    <Badge className="ml-2 bg-white text-blue-600">
                       Start Here
                     </Badge>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 space-y-4">
-                  <div className="text-center text-muted-foreground mb-4">
-                    <p className="text-sm">📱 Take photos first, then we'll auto-scan the details!</p>
+                <CardContent className="p-4 space-y-6">
+                  <div className="text-center text-muted-foreground mb-6">
+                    <p className="text-lg font-medium">📱 Scan VIN or License Plate to get started</p>
+                    <p className="text-sm">This will auto-populate all vehicle information</p>
                   </div>
 
-                  {/* Key Photos Section */}
+                  {/* VIN Scanning Section */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-center text-blue-600">📋 Required Photos</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <PhotoUploadField
-                        field="vinPhoto"
-                        label="🔍 VIN Plate Photo"
-                        description="📸 Scan VIN plate → Auto-extract VIN → Auto-decode vehicle"
-                        processing={vinOcrProcessing}
-                        result={vinOcrResult}
-                        icon={Target}
-                      />
-                      <PhotoUploadField
-                        field="odometer"
-                        label="📊 Odometer Photo"
-                        description="🤖 Auto-read mileage from odometer display"
-                        processing={ocrProcessing}
-                        result={ocrResult}
-                        icon={Zap}
-                      />
-                      <PhotoUploadField
-                        field="licensePlate"
-                        label="🚗 License Plate Photo"
-                        description="📋 Alternative vehicle identification method"
-                        processing={plateOcrProcessing}
-                        result={plateOcrResult}
-                        icon={FileText}
+                    <h3 className="font-semibold text-center text-blue-600 text-lg">🔍 Preferred: Scan VIN</h3>
+                    <PhotoUploadField
+                      field="vinPhoto"
+                      label="📋 VIN Plate Photo"
+                      description="📸 Scan VIN plate → Auto-extract VIN → Auto-decode vehicle"
+                      processing={vinOcrProcessing}
+                      result={vinOcrResult}
+                      icon={Target}
+                    />
+                    
+                    {/* Show VIN result if available */}
+                    {vinOcrResult && (
+                      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div className="text-center">
+                          <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                          <p className="font-semibold text-green-800">✅ VIN Scanned Successfully!</p>
+                          <p className="font-mono text-sm bg-white p-2 rounded border mt-2">{vinOcrResult}</p>
+                          {vehicleInfo && (
+                            <div className="mt-3 text-sm">
+                              <p className="font-medium">{vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
+                              <p className="text-green-600">Trade-in Value: {vehicleInfo.tradeInValue}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* OR Divider */}
+                  <div className="flex items-center my-6">
+                    <div className="flex-1 border-t border-gray-300"></div>
+                    <span className="mx-4 text-gray-500 font-medium">OR</span>
+                    <div className="flex-1 border-t border-gray-300"></div>
+                  </div>
+
+                  {/* License Plate Alternative */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-center text-purple-600 text-lg">🚗 Alternative: Scan License Plate</h3>
+                    <PhotoUploadField
+                      field="licensePlate"
+                      label="🚙 License Plate Photo"
+                      description="📋 Alternative vehicle identification method"
+                      processing={plateOcrProcessing}
+                      result={plateOcrResult}
+                      icon={FileText}
+                    />
+                    
+                    {/* Show license plate result if available */}
+                    {plateOcrResult && (
+                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="text-center">
+                          <CheckCircle className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                          <p className="font-semibold text-blue-800">✅ License Plate Scanned!</p>
+                          <p className="font-mono text-sm bg-white p-2 rounded border mt-2">{plateOcrResult}</p>
+                          <p className="text-xs text-blue-600 mt-2">Continue to next step to complete vehicle info</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Manual Entry Option */}
+                  <div className="space-y-4 pt-4 border-t">
+                    <h3 className="font-semibold text-center text-gray-600">✏️ Manual Entry (if scanning fails)</h3>
+                    <div>
+                      <Label className="text-center block mb-2">🔍 VIN Number</Label>
+                      <Input
+                        placeholder="Enter 17-digit VIN manually"
+                        value={formData.vin}
+                        onChange={(e) => handleInputChange("vin", e.target.value.toUpperCase())}
+                        maxLength={17}
+                        className="text-center font-mono"
                       />
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            )}
 
-                  {/* Additional Photos Section */}
-                  <div className="space-y-4 mt-6">
-                    <h3 className="font-semibold text-center text-purple-600">📷 Vehicle Photos</h3>
+            {/* Step 1: Odometer & Vehicle Photos */}
+            {currentStep === 1 && (
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+                  <CardTitle className="flex items-center">
+                    <Camera className="w-5 h-5 mr-2" />
+                    📸 Odometer & Vehicle Photos
+                    {vehicleInfo && (
+                      <Badge className="ml-2 bg-white text-green-600">
+                        {vehicleInfo.make} {vehicleInfo.model}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 space-y-6">
+                  <div className="text-center text-muted-foreground mb-4">
+                    <p className="text-sm">📊 Take odometer photo and vehicle condition photos</p>
+                  </div>
+
+                  {/* Odometer Section */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-center text-blue-600 text-lg">📊 Scan Odometer</h3>
+                    <PhotoUploadField
+                      field="odometer"
+                      label="📈 Odometer Reading"
+                      description="🤖 Auto-read mileage from odometer display"
+                      processing={ocrProcessing}
+                      result={ocrResult}
+                      icon={Zap}
+                    />
+                    
+                    {/* Show mileage result if available */}
+                    {ocrResult && (
+                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div className="text-center">
+                          <CheckCircle className="w-6 h-6 text-green-600 mx-auto mb-1" />
+                          <p className="font-semibold text-green-800">Mileage: {ocrResult} miles</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Vehicle Photos Section */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-center text-purple-600 text-lg">📷 Vehicle Condition Photos</h3>
                     <div className="grid grid-cols-2 gap-3">
                       <PhotoUploadField
                         field="exterior1"
-                        label="🚗 Exterior 1"
+                        label="🚗 Front/Side View"
                         description="Front and driver side view"
                         processing={false}
                         result=""
@@ -491,7 +583,7 @@ export default function EnhancedVehicleTradeInForm() {
                       />
                       <PhotoUploadField
                         field="exterior2"
-                        label="🚗 Exterior 2"
+                        label="🚗 Rear View"
                         description="Back view of vehicle"
                         processing={false}
                         result=""
@@ -499,7 +591,7 @@ export default function EnhancedVehicleTradeInForm() {
                       />
                       <PhotoUploadField
                         field="interior1"
-                        label="🪑 Interior 1"
+                        label="🪑 Interior Front"
                         description="Dashboard and front seats"
                         processing={false}
                         result=""
@@ -507,181 +599,54 @@ export default function EnhancedVehicleTradeInForm() {
                       />
                       <PhotoUploadField
                         field="interior2"
-                        label="🪑 Interior 2"
+                        label="🪑 Interior Rear"
                         description="Back seats and cargo area"
                         processing={false}
                         result=""
                         icon={Camera}
                       />
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Step 1: Auto-Scan Details */}
-            {currentStep === 1 && (
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-600 text-white">
-                  <CardTitle className="flex items-center">
-                    <Target className="w-5 h-5 mr-2" />
-                    🎯 Auto-Scan Results
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 space-y-4">
-                  <div className="text-center text-muted-foreground mb-6">
-                    <p className="text-sm">✨ Review scanned information and make corrections if needed</p>
-                  </div>
-
-                  {/* OCR Results Display */}
-                  <div className="space-y-4">
-                    {vinOcrResult && (
-                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                        <Label className="text-green-800 font-semibold">🔍 Scanned VIN</Label>
+                    
+                    {/* Optional Additional Photos */}
+                    <div className="pt-4 border-t">
+                      <h4 className="font-medium text-center text-gray-600 mb-3">📋 Additional Photos (Optional)</h4>
+                      <div className="grid grid-cols-1 gap-3">
                         <Input
-                          value={vinOcrResult}
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          multiple
                           onChange={(e) => {
-                            setVinOcrResult(e.target.value.toUpperCase())
-                            handleInputChange("vin", e.target.value.toUpperCase())
+                            // Handle multiple additional photos
+                            const files = Array.from(e.target.files || []);
+                            console.log('Additional photos:', files);
                           }}
-                          className="mt-1 font-mono"
-                          maxLength={17}
+                          className="text-sm"
                         />
+                        <p className="text-xs text-gray-500 text-center">
+                          📷 Damage, wear, special features, etc.
+                        </p>
                       </div>
-                    )}
-
-                    {ocrResult && (
-                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                        <Label className="text-blue-800 font-semibold">📊 Scanned Mileage</Label>
-                        <Input
-                          value={ocrResult}
-                          onChange={(e) => {
-                            setOcrResult(e.target.value)
-                            handleInputChange("mileage", e.target.value)
-                          }}
-                          className="mt-1"
-                          type="number"
-                        />
-                      </div>
-                    )}
-
-                    {plateOcrResult && (
-                      <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                        <Label className="text-yellow-800 font-semibold">🚗 Scanned License Plate</Label>
-                        <Input
-                          value={plateOcrResult}
-                          onChange={(e) => setPlateOcrResult(e.target.value.toUpperCase())}
-                          className="mt-1 font-mono"
-                        />
-                      </div>
-                    )}
-
-                    {!vinOcrResult && !ocrResult && !plateOcrResult && (
-                      <div className="text-center p-6 text-muted-foreground">
-                        <Target className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>No scan results yet. Make sure photos are clear!</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Step 2: Vehicle Details */}
-            {currentStep === 2 && (
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                  <CardTitle className="flex items-center">
-                    <Car className="w-5 h-5 mr-2" />
-                    🚗 Vehicle Details
-                    {vehicleInfo && (
-                      <Badge className="ml-2 bg-white text-blue-600">
-                        Auto-filled
-                      </Badge>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 space-y-4">
-                  <div>
-                    <Label className="flex items-center mb-2">
-                      🔍 VIN Number {vinDecoding && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
-                    </Label>
-                    <Input
-                      placeholder="Enter or scan VIN"
-                      value={formData.vin}
-                      onChange={(e) => handleInputChange("vin", e.target.value.toUpperCase())}
-                      maxLength={17}
-                      className="text-center font-mono"
-                    />
-                    {vehicleInfo && (
-                      <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                        <div className="text-sm font-medium text-green-800">
-                          ✅ {vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}
-                        </div>
-                        <div className="text-xs text-green-600">
-                          Trade-in: {vehicleInfo.tradeInValue}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <Label>Year</Label>
-                      <Input
-                        type="number"
-                        placeholder="2020"
-                        value={formData.year}
-                        onChange={(e) => handleInputChange("year", e.target.value)}
-                        className="text-center"
-                      />
-                    </div>
-                    <div>
-                      <Label>Make</Label>
-                      <Input
-                        placeholder="Honda"
-                        value={formData.make}
-                        onChange={(e) => handleInputChange("make", e.target.value)}
-                        className="text-center"
-                      />
-                    </div>
-                    <div>
-                      <Label>Model</Label>
-                      <Input
-                        placeholder="Civic"
-                        value={formData.model}
-                        onChange={(e) => handleInputChange("model", e.target.value)}
-                        className="text-center"
-                      />
                     </div>
                   </div>
 
-                  <div>
-                    <Label>📊 Mileage</Label>
-                    <Input
-                      type="number"
-                      placeholder="Enter or scan mileage"
-                      value={formData.mileage}
-                      onChange={(e) => handleInputChange("mileage", e.target.value)}
-                      className="text-center"
-                    />
-                  </div>
-
-                  <div>
+                  {/* Notes Section */}
+                  <div className="space-y-2">
                     <Label>📝 Notes (Optional)</Label>
                     <Textarea
-                      placeholder="Any additional notes about the vehicle..."
+                      placeholder="Any additional notes about the vehicle condition, issues, or special features..."
                       value={formData.notes}
                       onChange={(e) => handleInputChange("notes", e.target.value)}
                       rows={3}
+                      className="text-sm"
                     />
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Step 3: Review & Submit */}
-            {currentStep === 3 && (
+            {/* Step 2: Review & Submit */}
+            {currentStep === 2 && (
               <Card className="shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
                   <CardTitle className="flex items-center">

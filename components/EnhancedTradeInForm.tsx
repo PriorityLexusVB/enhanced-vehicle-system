@@ -465,8 +465,11 @@ export default function EnhancedVehicleTradeInForm() {
                 </CardHeader>
                 <CardContent className="p-4 space-y-6">
                   <div className="text-center text-muted-foreground mb-6">
-                    <p className="text-lg font-medium">📱 Scan VIN or License Plate to get started</p>
-                    <p className="text-sm">This will auto-populate all vehicle information</p>
+                    <p className="text-lg font-medium">📱 Quick Start Guide</p>
+                    <p className="text-sm">Scan your VIN plate (preferred) or license plate to auto-populate vehicle info</p>
+                    <div className="mt-2 text-xs bg-blue-50 p-2 rounded">
+                      💡 <strong>Tip:</strong> VIN scanning provides more accurate vehicle details and trade-in values
+                    </div>
                   </div>
 
                   {/* VIN Scanning Section */}

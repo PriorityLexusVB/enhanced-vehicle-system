@@ -75,6 +75,22 @@ export default function EnhancedVehicleTradeInForm() {
     { title: "Review", icon: CheckCircle, description: "Review & Submit" }
   ]
 
+  // Step validation logic
+  const canProceedToNextStep = () => {
+    switch (currentStep) {
+      case 0: // Scan step
+        return formData.vin || vinOcrResult || plateOcrResult
+      case 1: // Vehicle info & odometer
+        return formData.vin && (formData.mileage || ocrResult)
+      case 2: // Photos
+        return formData.exterior1 && formData.exterior2 && formData.interior1 && formData.interior2
+      case 3: // Review
+        return userEmail.trim()
+      default:
+        return true
+    }
+  }
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     if (field === "vin" && value.length === 17) {

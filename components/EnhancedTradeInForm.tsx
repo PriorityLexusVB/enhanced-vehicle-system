@@ -100,8 +100,6 @@ export default function EnhancedVehicleTradeInForm() {
         return formData.vin && (formData.mileage || ocrResult)
       case 2: // Photos
         return formData.exterior1 && formData.exterior2 && formData.interior1 && formData.interior2
-      case 3: // Review
-        return userEmail.trim()
       default:
         return true
     }

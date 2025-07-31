@@ -763,19 +763,6 @@ export default function EnhancedVehicleTradeInForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                  {/* Email Input */}
-                  <div className="space-y-2">
-                    <Label>📧 Your Email Address</Label>
-                    <Input
-                      type="email"
-                      placeholder="Enter your email for updates"
-                      value={userEmail}
-                      onChange={(e) => setUserEmail(e.target.value)}
-                      required
-                      className="text-center"
-                    />
-                  </div>
-
                   {vehicleInfo && (
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h3 className="font-medium">🚗 Vehicle Information</h3>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminOperations } from '@/lib/firebase-admin';
+import { firebaseAdmin } from '@/lib/firebase-admin';
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete user using our admin operations
-    await adminOperations.deleteUser(uid);
+    await firebaseAdmin.deleteUser(uid);
 
     return NextResponse.json({
       success: true,

@@ -35,7 +35,7 @@ export default function EnhancedVehicleTradeInForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState("")
-  const [userEmail, setUserEmail] = useState("user@example.com")
+  const [userEmail, setUserEmail] = useState("")
   const [ocrProcessing, setOcrProcessing] = useState(false)
   const [ocrResult, setOcrResult] = useState("")
   const [vinOcrProcessing, setVinOcrProcessing] = useState(false)

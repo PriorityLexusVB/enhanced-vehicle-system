@@ -46,14 +46,12 @@ export const adminOperations = {
 
   async getAllUsers(): Promise<AppUser[]> {
     try {
-      // Only run on client side
-      if (typeof window === 'undefined') {
-        console.log('Skipping user fetch during build time');
-        return [];
-      }
-
+      console.log('Fetching users from Firestore...');
+      
       const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
       const querySnapshot = await getDocs(q);
+      
+      console.log(`Found ${querySnapshot.docs.length} users in Firestore`);
       
       return querySnapshot.docs.map(doc => ({
         uid: doc.id,

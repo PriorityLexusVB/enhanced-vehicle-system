@@ -364,7 +364,7 @@ export default function EnhancedVehicleTradeInForm() {
       const photoUrls = await uploadFiles(submissionId)
 
       const submission = {
-        submittedBy: userEmail,
+        submittedBy: user?.email || 'anonymous@trade-in.com',
         vin: formData.vin,
         year: formData.year,
         make: formData.make,

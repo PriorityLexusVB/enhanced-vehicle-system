@@ -506,24 +506,43 @@ export default function EnhancedVehicleTradeInForm() {
               </Card>
             )}
 
-            {/* Step 1: Odometer & Vehicle Photos */}
+            {/* Step 1: Vehicle Info & Odometer */}
             {currentStep === 1 && (
               <Card className="shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-green-500 to-blue-600 text-white">
                   <CardTitle className="flex items-center">
-                    <Camera className="w-5 h-5 mr-2" />
-                    📸 Odometer & Vehicle Photos
-                    {vehicleInfo && (
-                      <Badge className="ml-2 bg-white text-green-600">
-                        {vehicleInfo.make} {vehicleInfo.model}
-                      </Badge>
-                    )}
+                    <Car className="w-5 h-5 mr-2" />
+                    🚗 Vehicle Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-6">
-                  <div className="text-center text-muted-foreground mb-4">
-                    <p className="text-sm">📊 Take odometer photo and vehicle condition photos</p>
-                  </div>
+                  {/* Vehicle Information Display */}
+                  {vehicleInfo && (
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <h3 className="font-semibold text-blue-800 text-center mb-3">✅ Vehicle Identified</h3>
+                      <div className="space-y-2 text-center">
+                        <p className="text-lg font-bold">{vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}</p>
+                        <p className="text-sm"><strong>VIN:</strong> {formData.vin}</p>
+                        <p className="text-green-600 font-semibold">Trade-in Value: {vehicleInfo.tradeInValue}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!vehicleInfo && formData.vin && (
+                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                      <h3 className="font-semibold text-yellow-800 text-center mb-2">🔍 VIN Entered</h3>
+                      <p className="text-center font-mono text-sm">{formData.vin}</p>
+                      <p className="text-center text-xs text-yellow-600 mt-2">Processing vehicle information...</p>
+                    </div>
+                  )}
+
+                  {plateOcrResult && !formData.vin && (
+                    <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                      <h3 className="font-semibold text-purple-800 text-center mb-2">🚗 License Plate Scanned</h3>
+                      <p className="text-center font-mono text-sm">{plateOcrResult}</p>
+                      <p className="text-center text-xs text-purple-600 mt-2">Please enter VIN manually or scan odometer to continue</p>
+                    </div>
+                  )}
 
                   {/* Odometer Section */}
                   <div className="space-y-4">
@@ -531,10 +550,11 @@ export default function EnhancedVehicleTradeInForm() {
                     <PhotoUploadField
                       field="odometer"
                       label="📈 Odometer Reading"
-                      description="🤖 Auto-read mileage from odometer display"
+                      description="Point camera at odometer display"
                       processing={ocrProcessing}
                       result={ocrResult}
-                      icon={Zap}
+                      icon={Target}
+                      useGuidance={true}
                     />
                     
                     {/* Show mileage result if available */}
@@ -546,86 +566,121 @@ export default function EnhancedVehicleTradeInForm() {
                         </div>
                       </div>
                     )}
-                  </div>
 
-                  {/* Vehicle Photos Section */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-center text-purple-600 text-lg">📷 Vehicle Condition Photos</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <PhotoUploadField
-                        field="exterior1"
-                        label="🚗 Front/Side View"
-                        description="Front and driver side view"
-                        processing={false}
-                        result=""
-                        icon={Camera}
-                      />
-                      <PhotoUploadField
-                        field="exterior2"
-                        label="🚗 Rear View"
-                        description="Back view of vehicle"
-                        processing={false}
-                        result=""
-                        icon={Camera}
-                      />
-                      <PhotoUploadField
-                        field="interior1"
-                        label="🪑 Interior Front"
-                        description="Dashboard and front seats"
-                        processing={false}
-                        result=""
-                        icon={Camera}
-                      />
-                      <PhotoUploadField
-                        field="interior2"
-                        label="🪑 Interior Rear"
-                        description="Back seats and cargo area"
-                        processing={false}
-                        result=""
-                        icon={Camera}
-                      />
-                    </div>
-                    
-                    {/* Optional Additional Photos */}
+                    {/* Manual mileage entry if OCR fails */}
                     <div className="pt-4 border-t">
-                      <h4 className="font-medium text-center text-gray-600 mb-3">📋 Additional Photos (Optional)</h4>
-                      <div className="grid grid-cols-1 gap-3">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          capture="environment"
-                          multiple
-                          onChange={(e) => {
-                            // Handle multiple additional photos
-                            const files = Array.from(e.target.files || []);
-                            console.log('Additional photos:', files);
-                          }}
-                          className="text-sm"
-                        />
-                        <p className="text-xs text-gray-500 text-center">
-                          📷 Damage, wear, special features, etc.
-                        </p>
-                      </div>
+                      <Label className="text-center block mb-2">✏️ Manual Mileage Entry</Label>
+                      <Input
+                        type="number"
+                        placeholder="Enter mileage if scan fails"
+                        value={formData.mileage}
+                        onChange={(e) => handleInputChange("mileage", e.target.value)}
+                        className="text-center"
+                      />
                     </div>
-                  </div>
-
-                  {/* Notes Section */}
-                  <div className="space-y-2">
-                    <Label>📝 Notes (Optional)</Label>
-                    <Textarea
-                      placeholder="Any additional notes about the vehicle condition, issues, or special features..."
-                      value={formData.notes}
-                      onChange={(e) => handleInputChange("notes", e.target.value)}
-                      rows={3}
-                      className="text-sm"
-                    />
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Step 2: Review & Submit */}
+            {/* Step 2: Vehicle Photos */}
             {currentStep === 2 && (
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-600 text-white">
+                  <CardTitle className="flex items-center">
+                    <Camera className="w-5 h-5 mr-2" />
+                    📸 Vehicle Photos
+                    {vehicleInfo && (
+                      <Badge className="ml-2 bg-white text-purple-600">
+                        {vehicleInfo.make} {vehicleInfo.model}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 space-y-6">
+                  <div className="text-center text-muted-foreground mb-4">
+                    <p className="text-sm">📷 Take photos of the vehicle condition</p>
+                  </div>
+
+                  {/* Vehicle Photos Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <PhotoUploadField
+                      field="exterior1"
+                      label="🚗 Front/Side"
+                      description="Front and driver side view"
+                      processing={false}
+                      result=""
+                      icon={Camera}
+                      useGuidance={false}
+                    />
+                    <PhotoUploadField
+                      field="exterior2"
+                      label="🚗 Rear View"
+                      description="Back of vehicle"
+                      processing={false}
+                      result=""
+                      icon={Camera}
+                      useGuidance={false}
+                    />
+                    <PhotoUploadField
+                      field="interior1"
+                      label="🪑 Interior Front"
+                      description="Dashboard and front seats"
+                      processing={false}
+                      result=""
+                      icon={Camera}
+                      useGuidance={false}
+                    />
+                    <PhotoUploadField
+                      field="interior2"
+                      label="🪑 Interior Rear"
+                      description="Back seats and cargo"
+                      processing={false}
+                      result=""
+                      icon={Camera}
+                      useGuidance={false}
+                    />
+                  </div>
+
+                  {/* Notes Section */}
+                  <div className="space-y-2 pt-4 border-t">
+                    <Label>📝 Condition Notes</Label>
+                    <Textarea
+                      placeholder="Note any damage, wear, special features, or issues..."
+                      value={formData.notes}
+                      onChange={(e) => handleInputChange("notes", e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+
+                  {/* Summary */}
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <h4 className="font-medium text-center mb-2">📋 Capture Summary</h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {[
+                        { key: 'vinPhoto', label: 'VIN' },
+                        { key: 'licensePlate', label: 'License' },
+                        { key: 'odometer', label: 'Odometer' },
+                        { key: 'exterior1', label: 'Front/Side' },
+                        { key: 'exterior2', label: 'Rear' }, 
+                        { key: 'interior1', label: 'Interior F' },
+                        { key: 'interior2', label: 'Interior R' }
+                      ].map(({ key, label }) => (
+                        <div key={key} className="flex items-center">
+                          {formData[key as keyof typeof formData] ? 
+                            <CheckCircle className="w-3 h-3 text-green-600 mr-1" /> : 
+                            <div className="w-3 h-3 border border-gray-400 rounded mr-1" />
+                          }
+                          <span className={formData[key as keyof typeof formData] ? 'text-green-600' : 'text-gray-500'}>
+                            {label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
               <Card className="shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
                   <CardTitle className="flex items-center">

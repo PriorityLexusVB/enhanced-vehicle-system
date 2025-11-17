@@ -38,11 +38,34 @@ yarn-error.log*
 next-env.d.ts
 
 # Google Cloud Service Account (NEVER COMMIT)
-trade-in-vision-api-646f33683094.json
-*.json
+# Be specific - don't block ALL .json files
+trade-in-vision-api-*.json
+*-service-account*.json
 service-account*.json
+*-credentials*.json
 
 # Enhanced system build artifacts
 .next
 build/
 dist/
+
+# Logs and temporary files
+*.log
+dev.log
+test_result.md
+
+# Backup files
+*.backup
+*.old
+*.bak
+
+# Archives
+*.tar.gz
+*.zip
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
